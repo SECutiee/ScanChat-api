@@ -1,0 +1,1 @@
+{"id":"2dlpv3dytr","name":"chatroom1","members":["user1","user2"],"message_count":2,"messages":[{"id":1,"content":"Hello","sender_id":"user1","timestamp":"2024-04-15 18:04:54 +0800"},{"id":2,"content":"Hi","sender_id":"user2","timestamp":"2024-04-15 18:04:54 +0800"}]}
