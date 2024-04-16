@@ -6,16 +6,16 @@ require 'time'
 module Chats
   STORE_DIR = 'app/db/store'
 
-  class CHATROOM
-    # Create a new chatroom by passing in a hash of initialization attributes
+  class Chatroom
+    # Create a new Chatroom by passing in a hash of initialization attributes
     def initialize(new_chatroom)
       @id = new_chatroom['id'] || new_chatroom[:id] || new_id
       @name = new_chatroom['name'] || new_chatroom[:name]
       @members = new_chatroom['members'] || new_chatroom[:members]
       @messages = new_chatroom['messages'] || new_chatroom[:messages]
-      unless @messages.empty? || @messages[0].instance_of?(Chats::MESSAGE)
+      unless @messages.empty? || @messages[0].instance_of?(Chats::Message)
         @messages.map! do |message|
-          Chats::MESSAGE.new(message)
+          Chats::Message.new(message)
         end
       end
       @message_count = new_chatroom['message_count'] || new_chatroom[:message_count] || @messages.length
@@ -38,7 +38,7 @@ module Chats
     def add_message(content, sender_id)
       # generate id for new message
       id = @message_count + 1
-      @messages.push(Chats::MESSAGE.new(id, content, sender_id, Time.now))
+      @messages.push(Chats::Message.new(id, content, sender_id, Time.now))
       @message_count += 1
     end
 
@@ -49,15 +49,15 @@ module Chats
 
     # File store must be setup once when application runs
     def self.setup
-      Dir.mkdir(Credence::STORE_DIR) unless Dir.exist? Credence::STORE_DIR
+      Dir.mkdir(Chats::STORE_DIR) unless Dir.exist? Chats::STORE_DIR
     end
 
     def self.find(id)
       chatroom_file = File.read("#{Chats::STORE_DIR}/#{id}.txt")
-      CHATROOM.new(JSON.parse(chatroom_file))
+      Chatroom.new(JSON.parse(chatroom_file))
     end
 
-    # Query method to retrieve index of all chatrooms
+    # Query method to retrieve index of all Chatrooms
     def self.all
       Dir.glob("#{Chats::STORE_DIR}/*.txt").map do |file|
         file.match(%r{#{Regexp.quote(Chats::STORE_DIR)}/(.*)\.txt})[1]
@@ -72,7 +72,7 @@ module Chats
     end
   end
 
-  class MESSAGE
+  class Message
     def initialize(new_message)
       @id = new_message['id'] || new_message[:id]
       @content = new_message['content'] || new_message[:content]

@@ -2,26 +2,50 @@
 
 require 'roda'
 require 'json'
-
 require_relative '../models/chat'
 
 module Chats
   # Web Controller for Chats API
-
-  class API < Roda
+  class Api < Roda
     plugin :environments
     plugin :halt
 
-    CHATROOM.setup
+    Chatroom.setup
 
     route do |r|
-      r.get '' do
-        'Chats API v0.1'
+      r.root do
+        response.status = 200
+        { message: 'Chats API up at /api/v1' }.to_json
       end
+      r.on 'api' do
+        r.on 'v1' do
+          r.on 'chatrooms' do
+            # GET api/v1/chatrooms/:id
+            r.get String do |id|
+              response.status = 200
+              Chats.find(id).to_json
+            rescue StandardError
+              routing.halt 404, { message: 'Chatroom not found' }.to_json
+            end
 
-      r.on 'chatrooms' do
-        r.get do
-          r.is do
+            # GET api/v1/chatrooms
+            r.get do
+              response.status = 200
+              output = { chatroom_ids: Chatroom.all }
+              JSON.pretty_generate(output)
+            end
+
+            # POST api/v1/chatrooms
+            r.post do
+              new_data = JSON.parse(r.body.read)
+              new_chatroom = Chatroom.new(new_data)
+
+              if new_chatroom.save
+              response.status = 201
+              { message: 'Chatroom created', id: new_chatroom.id }.to_json
+              else
+                routing.halt 400, { message: 'Could not create Chatroom' }.to_json
+            end
           end
         end
       end

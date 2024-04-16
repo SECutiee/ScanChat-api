@@ -1,0 +1,42 @@
+- id: 2dlpv3dytr
+  name: chatroom1
+  members:
+  - user1
+  - user2
+  message_count: 2
+  messages:
+  - id: 1
+    content: Hello
+    sender_id: user1
+    timestamp: 2024-04-15 18:04:54 +0800
+  - id: 2
+    content: Hi
+    sender_id: user2
+    timestamp: 2024-04-15 18:04:54 +0800
+- id: prCDyuKtXd
+  name: Group Project Discussion
+  members:
+  - Tristan
+  - Fifi
+  - Ju
+  - Angel
+  message_count: 21
+  messages:
+  - id: 1
+    content: Haha
+    sender_id: Tristan
+    timestamp: 2024-03-22 22:05:00 +0800
+  - id: 2
+    content: Ohhh I see I mean you can try taking the campus bus from the canteens
+    sender_id: Fifi
+    timestamp: 2024-03-22 22:27:00 +0800
+  - id: 3
+    content: "There\u2019s like this secret stairs from our school\u2019s hung dorm,\
+      \ but idk if you\u2019ll be able to find it"
+    sender_id: Fifi
+    timestamp: 2024-03-22 22:28:00 +0800
+  - id: 4
+    content: "Hey, the morning doesn't work for me since I have class. But 5:30 is\
+      \ fine for me. (Also why are you awake so late \U0001F976?)"
+    sender_id: Tristan
+    timestamp: 2024-04-15 08:47:00 +0800
