@@ -36,10 +36,16 @@ module Chats
       )
     end
 
-    def add_message(content, sender_id)
+    def self.add_message(chatroom_id, sender_id, content)
+      chatroom = find(chatroom_id)
+      chatroom.add_message(sender_id, content)
+      chatroom.save
+    end
+
+    def add_message(sender_id, content)
       # generate id for new message
-      id = @message_count + 1
-      @messages.push(Chats::Message.new(id, content, sender_id, Time.now))
+      id = @message_count
+      @messages.push(Chats::Message.new({ id:, content:, sender_id:, timestamp: Time.now }))
       @message_count += 1
     end
 
@@ -76,10 +82,10 @@ module Chats
   # Represents a message of a chatroom
   class Message
     def initialize(new_message)
-      @id = new_message['id']
-      @content = new_message['content']
-      @sender_id = new_message['sender_id']
-      @timestamp = new_message['timestamp']
+      @id = new_message['id'] || new_message[:id]
+      @content = new_message['content'] || new_message[:content]
+      @sender_id = new_message['sender_id'] || new_message[:sender_id]
+      @timestamp = new_message['timestamp'] || new_message[:timestamp]
     end
 
     def to_json(_options = {})
@@ -94,3 +100,4 @@ module Chats
     end
   end
 end
+Chats::Chatroom.add_message('2dlpv3dytr', 'Tristan', 'Hello, World!')

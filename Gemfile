@@ -21,3 +21,5 @@ gem 'rerun'
 
 # Quality
 gem 'rubocop'
+
+gem 'base64'
