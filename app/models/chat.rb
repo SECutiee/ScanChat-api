@@ -13,13 +13,13 @@ module Chats
       @id = new_chatroom['id'] || new_id
       @name = new_chatroom['name']
       @members = new_chatroom['members']
-      @messages = new_chatroom['messages']
+      @messages = new_chatroom['messages'] || []
       unless @messages.empty? || @messages[0].instance_of?(Chats::Message)
         @messages.map! do |message|
           Chats::Message.new(message)
         end
       end
-      @message_count = new_chatroom['message_count'] || @messages.length
+      @message_count = new_chatroom['message_count'] || new_chatroom[:message_count] || @messages.length
     end
 
     attr_reader :id, :name, :members, :message_count, :messages
@@ -76,10 +76,10 @@ module Chats
   # Represents a message of a chatroom
   class Message
     def initialize(new_message)
-      @id = new_message['id'] || new_message[:id]
-      @content = new_message['content'] || new_message[:content]
-      @sender_id = new_message['sender_id'] || new_message[:sender_id]
-      @timestamp = new_message['timestamp'] || new_message[:timestamp]
+      @id = new_message['id']
+      @content = new_message['content']
+      @sender_id = new_message['sender_id']
+      @timestamp = new_message['timestamp']
     end
 
     def to_json(_options = {})

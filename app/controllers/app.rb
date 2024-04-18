@@ -23,9 +23,9 @@ module Chats
             # GET api/v1/chatrooms/:id
             r.get String do |id|
               response.status = 200
-              Chats.find(id).to_json
+              Chatroom.find(id).to_json
             rescue StandardError
-              routing.halt 404, { message: 'Chatroom not found' }.to_json
+              r.halt 404, { message: 'Chatroom not found', id: }.to_json
             end
 
             # GET api/v1/chatrooms
@@ -44,7 +44,7 @@ module Chats
                 response.status = 201
                 { message: 'Chatroom created', id: new_chatroom.id }.to_json
               else
-                routing.halt 400, { message: 'Could not create Chatroom' }.to_json
+                r.halt 400, { message: 'Could not create Chatroom' }.to_json
               end
             end
           end
