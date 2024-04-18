@@ -12,7 +12,7 @@ def app
   Chats::Api
 end
 
-DATA = YAML.safe_load File.read('app/db/seeds/chats_seeds.yml')
+DATA = YAML.safe_load_file('app/db/seeds/chats_seeds.yml')
 
 describe 'Test Chats Web API' do
   include Rack::Test::Methods
@@ -39,7 +39,7 @@ describe 'Test Chats Web API' do
 
     it 'HAPPY: should be able to get details of a single chatroom' do
       Chats::Chatroom.new(DATA[1]).save
-      id = Dir.glob("#{Chats::STORE_DIR}/*.txt").first.split(%r{[/.]})[1]
+      id = Dir.glob("#{Chats::STORE_DIR}/*.txt").first.split(%r{[/.]})[3]
 
       get "/api/v1/chatrooms/#{id}"
       result = JSON.parse last_response.body
