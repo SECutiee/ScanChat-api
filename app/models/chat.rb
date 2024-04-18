@@ -6,19 +6,20 @@ require 'time'
 module Chats
   STORE_DIR = 'app/db/store'
 
+  # represents a chatroom in the system
   class Chatroom
     # Create a new Chatroom by passing in a hash of initialization attributes
     def initialize(new_chatroom)
-      @id = new_chatroom['id'] || new_chatroom[:id] || new_id
-      @name = new_chatroom['name'] || new_chatroom[:name]
-      @members = new_chatroom['members'] || new_chatroom[:members]
-      @messages = new_chatroom['messages'] || new_chatroom[:messages]
+      @id = new_chatroom['id'] || new_id
+      @name = new_chatroom['name']
+      @members = new_chatroom['members']
+      @messages = new_chatroom['messages']
       unless @messages.empty? || @messages[0].instance_of?(Chats::Message)
         @messages.map! do |message|
           Chats::Message.new(message)
         end
       end
-      @message_count = new_chatroom['message_count'] || new_chatroom[:message_count] || @messages.length
+      @message_count = new_chatroom['message_count'] || @messages.length
     end
 
     attr_reader :id, :name, :members, :message_count, :messages
@@ -72,6 +73,7 @@ module Chats
     end
   end
 
+  # Represents a message of a chatroom
   class Message
     def initialize(new_message)
       @id = new_message['id'] || new_message[:id]

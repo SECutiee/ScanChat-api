@@ -41,10 +41,11 @@ module Chats
               new_chatroom = Chatroom.new(new_data)
 
               if new_chatroom.save
-              response.status = 201
-              { message: 'Chatroom created', id: new_chatroom.id }.to_json
+                response.status = 201
+                { message: 'Chatroom created', id: new_chatroom.id }.to_json
               else
                 routing.halt 400, { message: 'Could not create Chatroom' }.to_json
+              end
             end
           end
         end
