@@ -1,1 +1,2 @@
 app/db/store/*
+app/db/store/*.db

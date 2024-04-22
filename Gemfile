@@ -7,19 +7,38 @@ gem 'json'
 gem 'puma'
 gem 'roda'
 
+# Configuration
+gem 'figaro'
+gem 'rake'
+
 # Security
+gem 'bundler-audit'
 gem 'rbnacl'
 
 # Testing
-gem 'minitest'
-gem 'minitest-rg'
-gem 'rack-test'
+group :test do
+  gem 'minitest'
+  gem 'minitest-rg'
+  gem 'rack-test'
+end
 
-# Debugging
+# Development
+gem 'hirb'
 gem 'pry'
 gem 'rerun'
 
 # Quality
 gem 'rubocop'
 
+# Performance
+gem 'rubocop-performance'
+
+# Parsing
 gem 'base64'
+
+# Database
+gem 'hirb'
+gem 'sequel'
+group :development, :test do
+  gem 'sqlite3'
+end
