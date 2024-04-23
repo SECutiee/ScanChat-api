@@ -2,8 +2,6 @@
 
 require 'roda'
 require 'json'
-require_relative '../models/chatroom'
-require_relative '../models/message'
 
 module Chats
   # Web Controller for Chats API

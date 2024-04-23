@@ -5,7 +5,7 @@
 require_relative '../require_app'
 require_app
 
-def app = Credence::Api
+def app = Chats::Api
 
 unless app.environment == :production
   require 'rack/test'

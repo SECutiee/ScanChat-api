@@ -8,7 +8,7 @@ Sequel.migration do
       foreign_key :chatroom_id, table: :chatrooms
       String :content, null: false
       String :sender_id, null: false
-      String :timestamp, null: false
+      # String :timestamp, null: false
       DateTime :created_at
       DateTime :updated_at
       unique [:chatroom_id, :id]

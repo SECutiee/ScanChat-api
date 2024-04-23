@@ -2,6 +2,7 @@ require 'json'
 require 'base64'
 require 'rbnacl'
 require 'time'
+require 'sequel'
 
 module Chats
   # Represents a message of a chatroom
@@ -15,8 +16,8 @@ module Chats
         {
           id: @id,
           content: @content,
-          sender_id: @sender_id,
-          timestamp: @timestamp
+          sender_id: @sender_id
+          # timestamp: @timestamp
         }
       )
     end

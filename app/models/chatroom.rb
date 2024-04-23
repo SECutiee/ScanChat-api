@@ -2,6 +2,7 @@ require 'json'
 require 'base64'
 require 'rbnacl'
 require 'time'
+require 'sequel'
 
 module Chats
   # represents a chatroom in the system
