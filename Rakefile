@@ -42,7 +42,7 @@ end
 
 namespace :db do
   task :load do
-    require_app # load nothing by default
+    require_app(nil) # load nothing by default
     require 'sequel'
 
     Sequel.extension :migration

@@ -17,7 +17,6 @@ module Chats
           id: @id,
           content: @content,
           sender_id: @sender_id
-          # timestamp: @timestamp
         }
       )
     end
