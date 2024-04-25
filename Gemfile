@@ -4,16 +4,26 @@ source 'https://rubygems.org'
 
 # Web API
 gem 'json'
-gem 'puma'
-gem 'roda'
+gem 'puma', '~>6.1'
+gem 'roda', '~>3.1'
 
 # Configuration
-gem 'figaro'
+gem 'figaro', '~>1.2'
 gem 'rake'
 
 # Security
 gem 'bundler-audit'
-gem 'rbnacl'
+gem 'rbnacl', '~>7.1'
+
+# Database
+gem 'hirb'
+gem 'sequel', '~>5.55'
+group :development, :test do
+  gem 'sqlite3', '~>2.0'
+end
+
+# Performance
+gem 'rubocop-performance'
 
 # Testing
 group :test do
@@ -23,22 +33,11 @@ group :test do
 end
 
 # Development
-gem 'hirb'
 gem 'pry'
 gem 'rerun'
 
 # Quality
 gem 'rubocop'
 
-# Performance
-gem 'rubocop-performance'
-
 # Parsing
 gem 'base64'
-
-# Database
-gem 'hirb'
-gem 'sequel'
-group :development, :test do
-  gem 'sqlite3'
-end
