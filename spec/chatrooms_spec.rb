@@ -1,4 +1,4 @@
-# frozen_sring_literal: true
+# frozen_string_literal: true
 
 require_relative 'spec_helper'
 
@@ -45,13 +45,13 @@ describe 'Test Chatroom Handling' do
     req_header = { 'CONTENT_TYPE' => 'application/json' }
     post 'api/v1/chatrooms', existing_chatr.to_json, req_header
     _(last_response.status).must_equal 201
-    _(last_respone.headers['Location']).must_match(%r{api/v1/chatrooms/\d+})
+    _(last_response.headers['Location']).must_match(%r{api/v1/chatrooms/\d+})
 
-    created = JSON.parse(last_respone.body)['data']['data']['attributes']
+    created = JSON.parse(last_response.body)['data']['data']['attributes']
     chatr = Chats::Chatroom.first
 
     _(created['id']).must_equal chatr.id
     _(created['name']).must_equal existing_chatr['name']
-    _(reated['members']).must_equal existing_chatr['members']
+    _(created['members']).must_equal existing_chatr['members']
   end
 end

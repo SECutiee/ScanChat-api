@@ -14,15 +14,15 @@ module Chats
     plugin :timestamps
 
     # rubocop:disable Metrics/MethodLength
-    def to_json(_options = {})
+    def to_json(options = {})
       JSON(
         {
           data: {
             type: 'message',
             attributes: {
               id:,
-              sender_id:,
-              content:
+              content:,
+              sender_id:
             }
           },
           included: {
