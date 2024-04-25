@@ -12,29 +12,23 @@ module Chats
 
     plugin :timestamps
 
-    def to_json(_options = {})
+    # rubocop:disable Metrics/MethodLength
+    def to_json(options = {})
       JSON(
         {
-          id: @id,
-          name: @name,
-          members: @members,
-          message_count: @message_count,
-          messages: @messages
-        }
+          data: {
+            type: 'chatroom',
+            attributes: {
+              id:,
+              name:,
+              members:,
+              message_count:,
+              messages:
+            }
+          }
+        }, options
       )
     end
-
-    # def self.add_message(chatroom_id, sender_id, content)
-    #   chatroom = find(chatroom_id)
-    #   chatroom.add_message(sender_id, content)
-    #   chatroom.save
-    # end
-
-    # def add_message(sender_id, content)
-    #   # generate id for new message
-    #   id = @message_count
-    #   @messages.push(Chats::Message.new({ id:, content:, sender_id:, timestamp: Time.now }))
-    #   @message_count += 1
-    # end
+    # rubocop:enable Metrics/MethodLength
   end
 end

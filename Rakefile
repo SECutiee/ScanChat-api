@@ -76,8 +76,3 @@ namespace :db do
     puts "Deleted #{db_filename}"
   end
 end
-
-desc 'Run application console (pry)'
-task :console => :print_env do
-  sh 'pry -r ./spec/test_load_all'
-end
