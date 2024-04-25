@@ -6,7 +6,6 @@ require 'json'
 module Chats
   # Web Controller for Chats API
   class Api < Roda
-    plugin :environments
     plugin :halt
 
     route do |r|
@@ -16,53 +15,78 @@ module Chats
         response.status = 200
         { message: 'ChatsAPI up at /api/v1' }.to_json
       end
+
       @api_root = 'api/v1'
       r.on @api_root do
         r.on 'chatrooms' do
           @chatr_route = "#{@api_root}/chatrooms"
 
-          # GET api/v1/chatrooms
-          r.get do
-            response.status = 200 # TODO: continue here (learn sequel gem first)
-            output = { chatroom_ids: Chatroom.all_ids }
-            JSON.pretty_generate(output)
+          r.on String do |chatr_id|
+            r.on 'messages' do
+              @mes_route = "#{@api_root}/chatrooms/#{chatr_id}/messages"
+
+              # GET api/v1/chatrooms/[chatr_id]/messages/[mes_id]
+              r.get String do |mes_id|
+                mes = Message.where(chatroom_id: chatr_id, id: mes_id).first
+                mes ? mes.to_json : raise('Message not found')
+              rescue StandardError => e
+                r.halt 404, { message: e.message }.to_json
+              end
+
+              # GET api/v1/chatrooms/[chatr_id]/messages
+              r.get do
+                output = { data: Chatroom.first(id: chatr_id).messages }
+                JSON.pretty_generate(output)
+              rescue StandardError
+                r.halt 404, { message: 'Could not find documents' }.to_json
+              end
+
+              # POST api/v1/chatrooms/[chatr_id]/messages
+              r.post do
+                new_data = JSON.parse(r.body.read)
+                chatr = Chatroom.first(id: chatr_id)
+                new_mes = chatr.add_message(new_data)
+                # Chatroom.add_message(chatr_id, new_data['sender_id'], new_data['content'])
+                if new_mes
+                  response.status = 201
+                  response['Location'] = "#{@mes_route}/#{new_mes.id}"
+                  { message: 'Message sended', data: new_mes }.to_json
+                else
+                  r.halt 400, { message: 'Could not send the message' }.to_json
+                end
+              rescue StandardError
+                r.halt 500, { message: 'Database eror' }.to_json
+              end
+            end
+
+            # GET api/v1/chatrooms/[chatr_id]
+            r.get do
+              chatr = Chatroom.first(id: chatr_id)
+              chatr ? chatr.to_json : raise('Chatroom not found')
+            rescue StandardError => e
+              r.halt 404, { message: e.message }.to_json
+            end
           end
 
-          r.on String do |chatroom_id|
-          end
-          # GET api/v1/chatrooms/:id
-          r.get String do |id|
-            response.status = 200
-            Chatroom
-              .rescue StandardError
-            r.halt 404, { message: 'Chatroom not found', id: }.to_json
+          # GET api/v1/chatrooms
+          r.get do
+            output = { data: Chatroom.all }
+            JSON.pretty_generate(output)
+          rescue StandardError
+            r.halt 404, { message: 'Could not find chatrooms' }.to_json
           end
 
           # POST api/v1/chatrooms
-          r.is do
-            r.post do
-              new_data = JSON.parse(r.body.read)
-              new_chatroom = Chatroom.new(new_data)
+          r.post do
+            new_data = JSON.parse(r.body.read)
+            new_chatr = Chatroom.new(new_data)
+            raise 'Could not create Chatroom' unless new_chatr.save
 
-              if new_chatroom.save
-                response.status = 201
-                { message: 'Chatroom created', id: new_chatroom.id }.to_json
-              else
-                r.halt 400, { message: 'Could not create Chatroom' }.to_json
-              end
-            end
-          end
-
-          r.on String do |chatroom_id|
-            r.on 'messages' do
-              # POST api/v1/chatrooms/:id/messages
-              r.post do
-                new_data = JSON.parse(r.body.read)
-                Chatroom.add_message(chatroom_id, new_data['sender_id'], new_data['content'])
-                response.status = 201
-                { message: 'Message added to Chatroom', chatroom_id: }.to_json
-              end
-            end
+            response.status = 201
+            response['Location'] = "#{@chatr_route}/#{new_chatr.id}"
+            { message: 'Chatroom created', data: new_chatr }.to_json
+          rescue StandardError => e
+            r.halt 400, { message: e.message }.to_json
           end
         end
       end
