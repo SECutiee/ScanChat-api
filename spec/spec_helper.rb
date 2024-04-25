@@ -9,8 +9,8 @@ require 'yaml'
 require_relative 'test_load_all'
 
 def wipe_database
-  app.DB[:chatrooms].delete
   app.DB[:messages].delete
+  app.DB[:chatrooms].delete
 end
 
 DATA = {} # rubocop:disable Style/MutableConstant

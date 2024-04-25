@@ -31,7 +31,7 @@ describe 'Test Message Handling' do
     chatr = Chats::Chatroom.first
     message = chatr.add_message(mes_data).save
 
-    get "api/v1/projects/#{chatr.id}/messages/#{message.id}"
+    get "api/v1/chatrooms/#{chatr.id}/messages/#{message.id}"
     _(last_response.status).must_equal 200
 
     result = JSON.parse last_response.body
