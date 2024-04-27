@@ -46,7 +46,7 @@ module Chats
                 new_data = JSON.parse(r.body.read)
                 chatr = Chatroom.first(id: chatr_id)
                 new_mes = chatr.add_message(new_data)
-                # Chatroom.add_message(chatr_id, new_data['sender_id'], new_data['content'])
+                
                 if new_mes
                   response.status = 201
                   response['Location'] = "#{@mes_route}/#{new_mes.id}"
