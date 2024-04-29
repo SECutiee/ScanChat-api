@@ -12,7 +12,27 @@ module Chats
     one_to_many :messages
     plugin :association_dependencies, messages: :destroy
 
+    plugin :uuid, field: :id
     plugin :timestamps
+    plugin :whitelist_security
+    set_allowed_columns :name, :members, :description
+
+    # Secure getters and setters
+    def name
+      SecureDB.decrypt(name_secure)
+    end
+
+    def name=(plaintext)
+      self.name_secure = SecureDB.encrypt(plaintext)
+    end
+
+    def description
+      SecureDB.decrypt(description_secure)
+    end
+
+    def description=(plaintext)
+      self.description_secure = SecureDB.encrypt(plaintext)
+    end
 
     # rubocop:disable Metrics/MethodLength
     def to_json(options = {})

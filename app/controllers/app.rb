@@ -8,6 +8,7 @@ module Chats
   class Api < Roda
     plugin :halt
 
+    # rubocop:disable Metrics/BlockLength
     route do |r|
       response['Content-Type'] = 'application/json'
 
@@ -38,7 +39,7 @@ module Chats
                 output = { data: Chatroom.first(id: chatr_id).messages }
                 JSON.pretty_generate(output)
               rescue StandardError
-                r.halt 404, { message: 'Could not find documents' }.to_json
+                r.halt 404, { message: 'Could not find messages' }.to_json
               end
 
               # POST api/v1/chatrooms/[chatr_id]/messages
@@ -46,16 +47,21 @@ module Chats
                 new_data = JSON.parse(r.body.read)
                 chatr = Chatroom.first(id: chatr_id)
                 new_mes = chatr.add_message(new_data)
-                
-                if new_mes
-                  response.status = 201
-                  response['Location'] = "#{@mes_route}/#{new_mes.id}"
-                  { message: 'Message sended', data: new_mes }.to_json
-                else
-                  r.halt 400, { message: 'Could not send the message' }.to_json
-                end
-              rescue StandardError
-                r.halt 500, { message: 'Database eror' }.to_json
+                raise 'Could not create Message' unless new_mes
+
+                response.status = 201
+                response['Location'] = "#{@mes_route}/#{new_mes.id}"
+                { message: 'Message sended', data: new_mes }.to_json
+              #   else
+              #     r.halt 400, { message: 'Could not send the message' }.to_json
+              #   end
+              # rescue StandardError
+              #   r.halt 500, { message: 'Database eror' }.to_json
+              rescue Sequel::MassAssignmentRestriction
+                Api.logger.warn "MASS-ASSIGNMENT: #{new_data.keys}"
+                r.halt 400, {message: "Illegal Attributes"}.to_json
+              rescue StandardError => e
+                r.halt 500, {message: e.message}.to_json
               end
             end
 
@@ -85,11 +91,16 @@ module Chats
             response.status = 201
             response['Location'] = "#{@chatr_route}/#{new_chatr.id}"
             { message: 'Chatroom created', data: new_chatr }.to_json
+          rescue Sequel::MassAssignmentRestriction
+            Api.logger.warn "MASS-ASSIGNMENT: #{new_data.keys}"
+            r.halt 400, {message: "Illegal Attributes"}.to_json
           rescue StandardError => e
-            r.halt 400, { message: e.message }.to_json
+            Api.logger.error "UNKNOWN ERROR: #{e.message}"
+            r.halt 500, {message: 'Unknwon server error'}.to_json
           end
         end
       end
     end
+    # rubocop:enable Metrics/BlockLength
   end
 end
