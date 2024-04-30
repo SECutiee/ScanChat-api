@@ -15,7 +15,7 @@ module Chats
     plugin :whitelist_security
     set_allowed_columns :content, :sender_id
 
-    #Secure getters and setters
+    # Secure getters and setters
 
     def content
       SecureDB.decrypt(content_secure)
