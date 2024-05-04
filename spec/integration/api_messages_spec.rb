@@ -48,10 +48,9 @@ describe 'Test Message Handling' do
     _(last_response.status).must_equal 404
   end
 
-
   describe 'Creating New Messages' do
     before do
-      @chatr= Chats::Chatroom.first
+      @chatr = Chats::Chatroom.first
       @mes_data = DATA[:messages][1]
       @req_header = { 'CONTENT_TYPE' => 'application/json' }
     end
@@ -73,7 +72,7 @@ describe 'Test Message Handling' do
       bad_data = @mes_data.clone
       bad_data['created_at'] = '1900-01-01'
       post "api/v1/chatrooms/#{@chatr.id}/messages",
-            bad_data.to_json, @req_header
+           bad_data.to_json, @req_header
 
       _(last_response.status).must_equal 400
       _(last_response.headers['Location']).must_be_nil

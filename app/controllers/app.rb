@@ -52,16 +52,11 @@ module Chats
                 response.status = 201
                 response['Location'] = "#{@mes_route}/#{new_mes.id}"
                 { message: 'Message sended', data: new_mes }.to_json
-              #   else
-              #     r.halt 400, { message: 'Could not send the message' }.to_json
-              #   end
-              # rescue StandardError
-              #   r.halt 500, { message: 'Database eror' }.to_json
               rescue Sequel::MassAssignmentRestriction
                 Api.logger.warn "MASS-ASSIGNMENT: #{new_data.keys}"
-                r.halt 400, {message: "Illegal Attributes"}.to_json
+                r.halt 400, { message: 'Illegal Attributes' }.to_json
               rescue StandardError => e
-                r.halt 500, {message: e.message}.to_json
+                r.halt 500, { message: e.message }.to_json
               end
             end
 
@@ -93,10 +88,10 @@ module Chats
             { message: 'Chatroom created', data: new_chatr }.to_json
           rescue Sequel::MassAssignmentRestriction
             Api.logger.warn "MASS-ASSIGNMENT: #{new_data.keys}"
-            r.halt 400, {message: "Illegal Attributes"}.to_json
+            r.halt 400, { message: 'Illegal Attributes' }.to_json
           rescue StandardError => e
             Api.logger.error "UNKNOWN ERROR: #{e.message}"
-            r.halt 500, {message: 'Unknwon server error'}.to_json
+            r.halt 500, { message: 'Unknwon server error' }.to_json
           end
         end
       end

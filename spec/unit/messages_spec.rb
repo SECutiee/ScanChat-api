@@ -21,14 +21,6 @@ describe 'Test Message Handling' do
     _(mes.sender_id).must_equal mes_data['sender_id']
   end
 
-#   it 'SECURITY: should not use deterministic integers' do
-#     mes_data = DATA[:messages][1]
-#     chatr = Chats::Chatroom.first
-#     new_mes = chatr.add_message(mes_data)
-
-#     _(new_mes.id.is_a?(Numeric)).must_equal false
-#   end
-
   it 'SECURITY: should secure sensitive attributes' do
     mes_data = DATA[:messages][1]
     chatr = Chats::Chatroom.first
