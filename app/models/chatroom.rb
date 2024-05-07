@@ -18,28 +18,13 @@ module ScanChat
     set_allowed_columns :members, :is_private, :link_expiration
 
     # Secure getters and setters
-    def name
-      SecureDB.decrypt(name_secure)
-    end
-
-    def name=(plaintext)
-      self.name_secure = SecureDB.encrypt(plaintext)
-    end
-
-    def description
-      SecureDB.decrypt(description_secure)
-    end
-
-    def description=(plaintext)
-      self.description_secure = SecureDB.encrypt(plaintext)
-    end
 
     # rubocop:disable Metrics/MethodLength
     def to_json(options = {})
       JSON(
         {
           data: {
-            type: 'thread',
+            type: 'chatroom',
             attributes: {
               id:,
               members:,

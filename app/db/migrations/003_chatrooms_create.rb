@@ -9,7 +9,6 @@ Sequel.migration do
 
       String :members, null: false, default: ''
       Boolean :is_private, default: false, null: false
-      DateTime :link_expiration
 
       DateTime :created_at
       DateTime :updated_at
