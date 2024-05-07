@@ -7,8 +7,9 @@ Sequel.migration do
       uuid :id, primary_key: true
 
       String :name_secure, null: false
-      String :members, null: false, default: ''
       String :description_secure, null: false, default: ''
+      String :owner
+      DateTime :expiration_date
 
       DateTime :created_at
       DateTime :updated_at

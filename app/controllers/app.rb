@@ -91,7 +91,7 @@ module ScanChat
             r.halt 400, { message: 'Illegal Attributes' }.to_json
           rescue StandardError => e
             Api.logger.error "UNKNOWN ERROR: #{e.message}"
-            r.halt 500, { message: 'Unknwon server error' }.to_json
+            r.halt 500, { message: 'Unknown server error' }.to_json
           end
         end
       end

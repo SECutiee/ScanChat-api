@@ -8,14 +8,14 @@ require 'sequel'
 
 module ScanChat
   # represents a thread in the system
-  class Thread < Sequel::Model
-    one_to_many :messages
-    plugin :association_dependencies, messages: :destroy
+  class Chatroom < Sequel::Model
+    one_to_one :thread
+    plugin :association_dependencies, thread: :destroy
 
     plugin :uuid, field: :id
     plugin :timestamps
     plugin :whitelist_security
-    set_allowed_columns :name, :owner, :description, :expiration_date
+    set_allowed_columns :members, :is_private, :link_expiration
 
     # Secure getters and setters
     def name
@@ -42,10 +42,9 @@ module ScanChat
             type: 'thread',
             attributes: {
               id:,
-              name:,
-              owner:,
-              description:,
-              expiration_date:
+              members:,
+              is_private:,
+              link_expiration:
             }
           }
         }, options

@@ -1,7 +1,7 @@
 ---
 - name: thread1
-  members: tristan, angel, fifi, ju
+  owner: tristan
   description: This is group number one
 - name: thread2
-  members: angel, fifi, ju
+  owner: angel
   description: This is group number two

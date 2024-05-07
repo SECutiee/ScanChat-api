@@ -3,15 +3,14 @@
 require 'sequel'
 Sequel.migration do
   change do
-    create_table(:messages) do
-      primary_key :id
+    create_table(:messageboards) do
+      uuid :id, primary_key: true
       foreign_key :thread_id, table: :threads
-      String :content_secure, null: false
-      String :sender_id, null: false
+
+      Boolean :is_anonymous, default: false, null: false
 
       DateTime :created_at
       DateTime :updated_at
-      unique [:thread_id, :id]
     end
   end
 end
