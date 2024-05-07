@@ -47,7 +47,7 @@ namespace :db do # rubocop:disable Metrics/BlockLength
     require 'sequel'
 
     Sequel.extension :migration
-    @app = Chats::Api
+    @app = ScanChat::Api
   end
 
   task :load_models do
@@ -62,7 +62,7 @@ namespace :db do # rubocop:disable Metrics/BlockLength
 
   desc 'Destroy data in database; maintain tables'
   task :delete => :load_models do
-    Chats::Chatroom.dataset.destroy
+    ScanChat::Thread.dataset.destroy
   end
 
   desc 'Delete dev or test database file'
@@ -72,7 +72,7 @@ namespace :db do # rubocop:disable Metrics/BlockLength
       return
     end
 
-    db_filename = "app/db/store/#{Chats::Api.environment}.db"
+    db_filename = "app/db/store/#{ScanChat::Api.environment}.db"
     FileUtils.rm(db_filename)
     puts "Deleted #{db_filename}"
   end

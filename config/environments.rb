@@ -6,7 +6,7 @@ require 'logger'
 require 'sequel'
 require './app/lib/secure_db'
 
-module Chats
+module ScanChat
   # Configuration for the API
   class Api < Roda
     plugin :environments

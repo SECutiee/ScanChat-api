@@ -3,8 +3,8 @@
 require 'roda'
 require 'json'
 
-module Chats
-  # Web Controller for Chats API
+module ScanChat
+  # Web Controller for ScanChat API
   class Api < Roda
     plugin :halt
 
@@ -14,39 +14,39 @@ module Chats
 
       r.root do
         response.status = 200
-        { message: 'ChatsAPI up at /api/v1' }.to_json
+        { message: 'ScanChatAPI up at /api/v1' }.to_json
       end
 
       @api_root = 'api/v1'
       r.on @api_root do
-        r.on 'chatrooms' do
-          @chatr_route = "#{@api_root}/chatrooms"
+        r.on 'threads' do
+          @thread_route = "#{@api_root}/threads"
 
-          r.on String do |chatr_id|
+          r.on String do |thread_id|
             r.on 'messages' do
-              @mes_route = "#{@api_root}/chatrooms/#{chatr_id}/messages"
+              @mes_route = "#{@api_root}/threads/#{thread_id}/messages"
 
-              # GET api/v1/chatrooms/[chatr_id]/messages/[mes_id]
+              # GET api/v1/threads/[thread_id]/messages/[mes_id]
               r.get String do |mes_id|
-                mes = Message.where(chatroom_id: chatr_id, id: mes_id).first
+                mes = Message.where(thread_id:, id: mes_id).first
                 mes ? mes.to_json : raise('Message not found')
               rescue StandardError => e
                 r.halt 404, { message: e.message }.to_json
               end
 
-              # GET api/v1/chatrooms/[chatr_id]/messages
+              # GET api/v1/threads/[thread_id]/messages
               r.get do
-                output = { data: Chatroom.first(id: chatr_id).messages }
+                output = { data: Thread.first(id: thread_id).messages }
                 JSON.pretty_generate(output)
               rescue StandardError
                 r.halt 404, { message: 'Could not find messages' }.to_json
               end
 
-              # POST api/v1/chatrooms/[chatr_id]/messages
+              # POST api/v1/threads/[thread_id]/messages
               r.post do
                 new_data = JSON.parse(r.body.read)
-                chatr = Chatroom.first(id: chatr_id)
-                new_mes = chatr.add_message(new_data)
+                thread = Thread.first(id: thread_id)
+                new_mes = thread.add_message(new_data)
                 raise 'Could not create Message' unless new_mes
 
                 response.status = 201
@@ -60,32 +60,32 @@ module Chats
               end
             end
 
-            # GET api/v1/chatrooms/[chatr_id]
+            # GET api/v1/threads/[thread_id]
             r.get do
-              chatr = Chatroom.first(id: chatr_id)
-              chatr ? chatr.to_json : raise('Chatroom not found')
+              thread = Thread.first(id: thread_id)
+              thread ? thread.to_json : raise('Thread not found')
             rescue StandardError => e
               r.halt 404, { message: e.message }.to_json
             end
           end
 
-          # GET api/v1/chatrooms
+          # GET api/v1/threads
           r.get do
-            output = { data: Chatroom.all }
+            output = { data: Thread.all }
             JSON.pretty_generate(output)
           rescue StandardError
-            r.halt 404, { message: 'Could not find chatrooms' }.to_json
+            r.halt 404, { message: 'Could not find Threads' }.to_json
           end
 
-          # POST api/v1/chatrooms
+          # POST api/v1/threads
           r.post do
             new_data = JSON.parse(r.body.read)
-            new_chatr = Chatroom.new(new_data)
-            raise 'Could not create Chatroom' unless new_chatr.save
+            new_thread = Thread.new(new_data)
+            raise 'Could not create Thread' unless new_thread.save
 
             response.status = 201
-            response['Location'] = "#{@chatr_route}/#{new_chatr.id}"
-            { message: 'Chatroom created', data: new_chatr }.to_json
+            response['Location'] = "#{@thread_route}/#{new_thread.id}"
+            { message: 'Thread created', data: new_thread }.to_json
           rescue Sequel::MassAssignmentRestriction
             Api.logger.warn "MASS-ASSIGNMENT: #{new_data.keys}"
             r.halt 400, { message: 'Illegal Attributes' }.to_json

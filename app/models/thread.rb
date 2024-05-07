@@ -6,9 +6,9 @@ require 'rbnacl'
 require 'time'
 require 'sequel'
 
-module Chats
-  # represents a chatroom in the system
-  class Chatroom < Sequel::Model
+module ScanChat
+  # represents a thread in the system
+  class Thread < Sequel::Model
     one_to_many :messages
     plugin :association_dependencies, messages: :destroy
 
@@ -39,7 +39,7 @@ module Chats
       JSON(
         {
           data: {
-            type: 'chatroom',
+            type: 'thread',
             attributes: {
               id:,
               name:,
