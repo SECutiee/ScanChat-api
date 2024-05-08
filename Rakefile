@@ -62,7 +62,8 @@ namespace :db do # rubocop:disable Metrics/BlockLength
 
   desc 'Destroy data in database; maintain tables'
   task :delete => :load_models do
-    ScanChat::Thread.dataset.destroy
+    ScanChat::Messageboard.dataset.destroy
+    ScanChat::Chatroom.dataset.destroy
   end
 
   desc 'Delete dev or test database file'
