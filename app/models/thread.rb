@@ -12,34 +12,34 @@ module ScanChat
     one_to_many :messages
     plugin :association_dependencies, messages: :destroy
 
-    # Polymorphic association
-    one_to_one :messageboard, key: :threadable_id
-    one_to_one :chatroom, key: :threadable_id
+    # association
+    one_to_one :messageboard
+    one_to_one :chatroom
 
     # Plugins
     plugin :uuid, field: :id
     plugin :validation_helpers
     plugin :timestamps
     plugin :whitelist_security
-    set_allowed_columns :name, :owner_id, :threadable_id, :threadable_type, :description, :expiration_date
+    set_allowed_columns :name, :owner_id, :thread_type, :description, :expiration_date
 
     # Validations
     def validate
       super
-      return if threadable_id_valid?
+      return if thread_type_valid?
 
-      errors.add(:threadable_id,
-                 'must reference a threadable(chatroom/messageboard) that matches the threadable_type')
+      errors.add('must reference a single chatroom/messageboard that matches the thread_type')
     end
 
-    # Custom validation method to check threadable_type
-    def threadable_id_valid?
-      return true if threadable_id.nil? || threadable_id.empty?
+    # Custom validation method to check thread_type
+    def thread_type_valid?
+      return false if messageboard && chatroom
+      return true if messageboard.nil? && chatroom.nil?
 
-      if threadable_type == 'chatroom'
-        Chatroom.where(id: threadable_id).count.positive?
+      if thread_type == 'messageboard'
+        chatroom.nil?
       else
-        Messageboard.where(id: threadable_id).count.positive?
+        messageboard.nil?
       end
     end
 
