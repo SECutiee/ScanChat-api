@@ -8,7 +8,7 @@ Sequel.migration do
       foreign_key :thread_id, table: :threads
 
       String :members, null: false, default: ''
-      Boolean :is_private, default: false, null: false
+      Boolean :is_private, null: false
 
       DateTime :created_at
       DateTime :updated_at

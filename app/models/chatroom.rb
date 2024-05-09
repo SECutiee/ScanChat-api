@@ -17,10 +17,10 @@ module ScanChat
                  left_key: :chatroom_id, right_key: :member_id
 
     # Plugins
-    plugin :uuid, field: :thread_id
+    plugin :uuid, field: :id
+    # plugin :uuid, field: :thread_id
     plugin :association_dependencies, thread: :destroy
     plugin :validation_helpers
-    plugin :uuid, field: :id
     plugin :timestamps
     plugin :whitelist_security
     set_allowed_columns :members, :is_private, :link_expiration, :thread_id

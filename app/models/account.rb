@@ -23,12 +23,13 @@ module ScanChat
 
     plugin :timestamps, update_on_create: true
 
-    def chatrooms
-      # threads which are chatrooms, chatrooms with the owner_id of this account
+    # helper functions for relationship to chatrooms/messageboards
+    def owned_chatrooms
+      owned_threads.select { |thread| thread.thread_type == 'chatroom' }.map(&:chatroom)
     end
 
-    def messageboards
-      # threads which are messageboards, msgbrds, with the owner_id of this account
+    def owned_messageboards
+      owned_threads.select { |thread| thread.thread_type == 'messageboard' }
     end
 
     def password=(new_password)

@@ -9,21 +9,22 @@ require 'sequel'
 module ScanChat
   # represents a thread in the system
   class Thread < Sequel::Model
-    one_to_many :messages
-    plugin :association_dependencies, messages: :destroy
-
     # Associations
     many_to_one :owner, class: :'ScanChat::Account'
-
     one_to_one :messageboard
     one_to_one :chatroom
 
+    one_to_many :messages
+    plugin :association_dependencies, messages: :destroy
+
     # Plugins
     plugin :uuid, field: :id
+    # plugin :uuid, field: :messageboard_id
+    # plugin :uuid, field: :chatroom_id
     plugin :validation_helpers
     plugin :timestamps
     plugin :whitelist_security
-    set_allowed_columns :name, :owner_id, :thread_type, :description, :expiration_date
+    set_allowed_columns :name, :thread_type, :description, :expiration_date
 
     # Validations
     def validate
