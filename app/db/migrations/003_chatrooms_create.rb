@@ -5,7 +5,7 @@ Sequel.migration do
   change do
     create_table(:chatrooms) do
       uuid :id, primary_key: true
-      foreign_key :thread_id, table: :threads
+      uuid :thread_id, type: :uuid, foreign_key: { table: :threads, key: :id, type: :uuid }
 
       # String :members, null: false, default: ''
       Boolean :is_private, null: false

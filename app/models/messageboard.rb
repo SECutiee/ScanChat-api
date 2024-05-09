@@ -21,6 +21,23 @@ module ScanChat
     plugin :whitelist_security
     set_allowed_columns :is_anonymous, :thread_id
 
+    # getters and setters for data elements of threads
+    def name
+      thread.name
+    end
+
+    def description
+      thread.description
+    end
+
+    def expiration_date
+      thread.expiration_date
+    end
+
+    def owner
+      thread.owner
+    end
+
     # rubocop:disable Metrics/MethodLength
     def to_json(options = {})
       JSON(

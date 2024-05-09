@@ -54,6 +54,8 @@ module ScanChat
     end
 
     def description
+      return '' if description_secure == ''
+
       SecureDB.decrypt(description_secure)
     end
 

@@ -5,7 +5,7 @@ Sequel.migration do
   change do
     create_table(:messageboards) do
       uuid :id, primary_key: true
-      foreign_key :thread_id, table: :threads
+      uuid :thread_id, type: :uuid, foreign_key: { table: :threads, key: :id, type: :uuid }
 
       Boolean :is_anonymous, null: false
 

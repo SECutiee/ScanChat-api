@@ -26,8 +26,21 @@ module ScanChat
     set_allowed_columns :members, :is_private, :link_expiration, :thread_id
 
     # getters and setters for data elements of threads
+    def name
+      thread.name
+    end
 
-    # Secure getters and setters
+    def description
+      thread.description
+    end
+
+    def expiration_date
+      thread.expiration_date
+    end
+
+    def owner
+      thread.owner
+    end
 
     # rubocop:disable Metrics/MethodLength
     def to_json(options = {})
