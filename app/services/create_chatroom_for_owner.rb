@@ -10,6 +10,7 @@ module ScanChat
       new_chatroom.save
       Account.find(id: owner_id)
              .add_owned_thread(new_thread)
+      new_thread.chatroom
     end
   end
 end

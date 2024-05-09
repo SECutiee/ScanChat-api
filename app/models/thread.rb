@@ -19,8 +19,6 @@ module ScanChat
 
     # Plugins
     plugin :uuid, field: :id
-    # plugin :uuid, field: :messageboard_id
-    # plugin :uuid, field: :chatroom_id
     plugin :validation_helpers
     plugin :timestamps
     plugin :whitelist_security

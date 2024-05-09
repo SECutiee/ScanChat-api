@@ -25,6 +25,8 @@ module ScanChat
     plugin :whitelist_security
     set_allowed_columns :members, :is_private, :link_expiration, :thread_id
 
+    # getters and setters for data elements of threads
+
     # Secure getters and setters
 
     # rubocop:disable Metrics/MethodLength

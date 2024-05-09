@@ -29,7 +29,7 @@ module ScanChat
     end
 
     def owned_messageboards
-      owned_threads.select { |thread| thread.thread_type == 'messageboard' }
+      owned_threads.select { |thread| thread.thread_type == 'messageboard' }.map(&:messageboard)
     end
 
     def password=(new_password)

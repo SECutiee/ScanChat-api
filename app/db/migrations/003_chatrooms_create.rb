@@ -7,7 +7,7 @@ Sequel.migration do
       uuid :id, primary_key: true
       foreign_key :thread_id, table: :threads
 
-      String :members, null: false, default: ''
+      # String :members, null: false, default: ''
       Boolean :is_private, null: false
 
       DateTime :created_at
