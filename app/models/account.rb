@@ -9,10 +9,10 @@ module ScanChat
   class Account < Sequel::Model
     one_to_many :owned_threads, class: :'ScanChat::Thread', key: :owner_id
     one_to_many :sent_messages, class: :'ScanChat::Message', key: :sender_id
-    many_to_many :chatrooms,
+    many_to_many :joined_chatrooms,
                  class: :'ScanChat::Chatroom',
                  join_table: :accounts_chatrooms,
-                 left_key: :account_id, right_key: :chatroom_id
+                 left_key: :member_id, right_key: :chatroom_id
 
     plugin :association_dependencies,
            owned_threads: :destroy

@@ -12,7 +12,9 @@ module ScanChat
     one_to_many :messages
     plugin :association_dependencies, messages: :destroy
 
-    # association
+    # Associations
+    many_to_one :owner, class: :'ScanChat::Account'
+
     one_to_one :messageboard
     one_to_one :chatroom
 

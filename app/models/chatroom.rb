@@ -9,8 +9,12 @@ require 'sequel'
 module ScanChat
   # represents a thread in the system
   class Chatroom < Sequel::Model
-    # Association to Thread
+    # Associations
     many_to_one :thread
+    many_to_many :members,
+                 class: :'ScanChat::Account',
+                 join_table: :accounts_chatrooms,
+                 left_key: :chatroom_id, right_key: :member_id
 
     # Plugins
     plugin :uuid, field: :thread_id
