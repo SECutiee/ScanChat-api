@@ -21,21 +21,58 @@ module ScanChat
     plugin :whitelist_security
     set_allowed_columns :is_anonymous, :thread_id
 
-    # getters and setters for data elements of threads
+    # methods to ensure that threads doesn't have to be called directly in code
+    def save
+      super
+      thread.save
+    end
+
+    def add_message(message_data)
+      thread.add_message(message_data)
+    end
+
+    def messages
+      thread.messages
+    end
+
     def name
+      # thread.refresh # TODO: omit the refresh since performance is bad
       thread.name
     end
 
     def description
+      # thread.refresh
       thread.description
     end
 
     def expiration_date
+      # thread.refresh
       thread.expiration_date
     end
 
     def owner
+      # thread.refresh
       thread.owner
+    end
+
+    def name=(value)
+      thread.name = value
+      # thread.save # potential performance implications
+    end
+
+    def description=(value)
+      thread.description = value
+      # thread.save
+    end
+
+    def expiration_date=(value)
+      thread.expiration_date = value
+      # thread.save
+    end
+
+    def owner=(value)
+      thread.owner = value
+      # thread.save
     end
 
     # rubocop:disable Metrics/MethodLength
