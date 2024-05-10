@@ -25,7 +25,7 @@ module ScanChat
           r.on String do |username|
             # GET api/v1/accounts/[username]
             r.get do
-              account = Account.first(username: )
+              account = Account.first(username:)
               account ? account.to_json : raise('Account not found')
             rescue StandardError => e
               r.halt 404, { message: e.message }.to_json
