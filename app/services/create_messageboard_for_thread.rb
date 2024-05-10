@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module ScanChat
-  # Create new configuration for a project
-  class CreateMessageboardForOwner
+  # Create new configuration for a thread
+  class CreateMessageboardForThread
     def self.call(owner_id:, name:, is_anonymous:)
       new_thread = ScanChat::Thread.create(name:, thread_type: 'messageboard')
       new_messageboard = ScanChat::Messageboard.create(is_anonymous:)

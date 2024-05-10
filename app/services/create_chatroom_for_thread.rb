@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module ScanChat
-  # Create new configuration for a project
+  # Create new configuration for a thread
   class CreateChatroomForOwner
     def self.call(owner_id:, name:, is_private:)
       new_thread = ScanChat::Thread.create(name:, thread_type: 'chatroom')
