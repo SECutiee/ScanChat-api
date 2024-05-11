@@ -19,10 +19,10 @@ describe 'Test Message Handling' do
       thre.add_message(message_data) ###
     end
 
-    get "api/v1/chatrooms/#{chatr.id}/messages" ### ask chatr.id
+    get "api/v1/chatrooms/#{thre.id}/messages" ### ask chatr.id
     _(last_response.status).must_equal 200
 
-    get "api/v1/messageboards/#{mesbor.id}/messages" ### new add
+    get "api/v1/messageboards/#{thre.id}/messages" ### new add
     _(last_response.status).must_equal 200
 
     result = JSON.parse last_response.body
@@ -38,7 +38,7 @@ describe 'Test Message Handling' do
     get "api/v1/chatrooms/#{thre.id}/messages/#{message.id}"
     _(last_response.status).must_equal 200
 
-    get "api/v1/messageboards/#{mesbor.id}/messages/#{message.id}" ### new add
+    get "api/v1/messageboards/#{thre.id}/messages/#{message.id}" ### new add
     _(last_response.status).must_equal 200
 
     result = JSON.parse last_response.body
@@ -49,8 +49,8 @@ describe 'Test Message Handling' do
 
   it 'SAD: should return error if unknown message requested' do
     thre = ScanChat::Thread.first
-    get "/api/v1/chatrooms/#{chatr.id}/messages/foobar" ###
-    get "/api/v1/messageboards/#{mesbor.id}/messages/foobar" ### new add
+    get "/api/v1/chatrooms/#{thre.id}/messages/foobar" ###
+    get "/api/v1/messageboards/#{thre.id}/messages/foobar" ### new add
 
     _(last_response.status).must_equal 404
   end
@@ -63,8 +63,8 @@ describe 'Test Message Handling' do
     end
 
     it 'HAPPY: should be able to create a new message' do
-      post "/api/v1/chatrooms/#{@chatr.id}/messages", @mes_data.to_json, @req_header
-      post "/api/v1/messageboards/#{@mesbor.id}/messages", @mes_data.to_json, @req_header ### new add
+      post "/api/v1/chatrooms/#{@thre.id}/messages", @mes_data.to_json, @req_header
+      post "/api/v1/messageboards/#{@thre.id}/messages", @mes_data.to_json, @req_header ### new add
       _(last_response.status).must_equal 201
       _(last_response.headers['Location'].size).must_be :>, 0
 
@@ -79,10 +79,10 @@ describe 'Test Message Handling' do
     it 'SECURITY: should not create messages with mass assignment' do
       bad_data = @mes_data.clone
       bad_data['created_at'] = '1900-01-01'
-      post "api/v1/chatrooms/#{@chatr.id}/messages",
+      post "api/v1/chatrooms/#{@thre.id}/messages",
            bad_data.to_json, @req_header
 
-      post "api/v1/messageboards/#{@mesbor.id}/messages", ###
+      post "api/v1/messageboards/#{@thre.id}/messages", ###
            bad_data.to_json, @req_header
 
       _(last_response.status).must_equal 400

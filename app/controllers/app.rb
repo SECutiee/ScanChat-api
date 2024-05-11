@@ -5,7 +5,7 @@ require 'json'
 
 module ScanChat
   # Web Controller for ScanChat API
-  class Api < Roda
+  class Api < Roda # rubocop:disable Metrics/ClassLength
     plugin :halt
 
     # rubocop:disable Metrics/BlockLength
