@@ -41,8 +41,8 @@ describe 'Test messageboards Handling' do ###
     end
 
     it 'SECURITY: should prevent basic SQL injection targeting IDs' do
-      ScanChat::Thread.create(name: 'New messageboard') ###
-      ScanChat::Thread.create(name: 'Newer messageboard') ###
+      ScanChat::Thread.create(name: 'New messageboard', thread_type: 'messageboard') ###
+      ScanChat::Thread.create(name: 'Newer messageboard', thread_type: 'messageboard') ###
       get 'api/v1/threads/2%20or%20id%3E0' ### ask
 
       # deliberately not reporting error -- don't give attacker information

@@ -41,8 +41,8 @@ describe 'Test Thread Handling' do
     end
 
     it 'SECURITY: should prevent basic SQL injection targeting IDs' do
-      ScanChat::Thread.create(name: 'New Thread')
-      ScanChat::Thread.create(name: 'Newer Thread')
+      ScanChat::Thread.create(name: 'New Thread', thread_type: 'chatroom')
+      ScanChat::Thread.create(name: 'Newer Thread', thread_type: 'chatroom')
       get 'api/v1/thread/2%20or%20id%3E0'
 
       # deliberately not reporting error -- don't give attacker information

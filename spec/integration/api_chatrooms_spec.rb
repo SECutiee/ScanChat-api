@@ -7,6 +7,10 @@ describe 'Test chatrooms Handling' do ###
 
   before do
     wipe_database
+
+    DATA[:threads].each do |thread_data|
+      ScanChat::Thread.create(thread_data)
+    end
   end
 
   describe 'Getting chatrooms' do ###
@@ -21,10 +25,10 @@ describe 'Test chatrooms Handling' do ###
       _(result['data'].count).must_equal 2
     end
 
-    it 'HAPPY: should be able to get details of a single chatroom' do ###
-      existing_thre = DATA[:threads][1] ###
-      ScanChat::Thread.create(existing_thre) ###
-      id = ScanChat::Thread.first.id ###
+    it 'HAPPY: should be able to get details of a single chatroom' do
+      existing_thre = DATA[:chatrooms][1]
+      ScanChat::Chatroom.create(existing_thre)
+      id = ScanChat::Chatroom.first.id
 
       get "/api/v1/chatrooms/#{id}" ### ask same Q in line 17
       _(last_response.status).must_equal 200
@@ -41,8 +45,8 @@ describe 'Test chatrooms Handling' do ###
     end
 
     it 'SECURITY: should prevent basic SQL injection targeting IDs' do
-      ScanChat::Thread.create(name: 'New Chatroom') ###
-      ScanChat::Thread.create(name: 'Newer Chatroom') ###
+      ScanChat::Thread.create(name: 'New Chatroom', thread_type: 'chatroom') ###
+      ScanChat::Thread.create(name: 'Newer Chatroom', thread_type: 'chatroom') ###
       get 'api/v1/chatrooms/2%20or%20id%3E0' ### ask
 
       # deliberately not reporting error -- don't give attacker information

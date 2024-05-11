@@ -6,8 +6,8 @@ Sequel.migration do
     create_table(:threads) do
       uuid :id, primary_key: true
       add_foreign_key :owner_id, table: :accounts
-      String :thread_type, null: false
 
+      String :thread_type, null: false
       String :name_secure, null: false
       String :description_secure, null: false, default: ''
       DateTime :expiration_date

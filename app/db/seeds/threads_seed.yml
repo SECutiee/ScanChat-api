@@ -1,13 +1,10 @@
 ---
 - name: Taggie
-  owner: angel
   description: This is thread number one
-  type: chatroom
+  thread_type: chatroom
 - name: SECutiee
-  owner: ju
   description: This is thread number two
-  type: chatroom
+  thread_type: chatroom
 - name: Emory
-  owner: ju
   description: This is thread number three
-  type: massageboard
+  thread_type: messageboard
