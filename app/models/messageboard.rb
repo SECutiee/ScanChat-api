@@ -8,22 +8,18 @@ require 'sequel'
 
 module ScanChat
   # represents a thread in the system
-  class Chatroom < Sequel::Model
-    # Associations
+  class Messageboard < Sequel::Model
+    # Association to Thread
     many_to_one :thread
-    many_to_many :members,
-                 class: :'ScanChat::Account',
-                 join_table: :accounts_chatrooms,
-                 left_key: :chatroom_id, right_key: :member_id
 
     # Plugins
-    plugin :uuid, field: :id
-    # plugin :uuid, field: :thread_id
+    plugin :uuid, field: :thread_id
     plugin :association_dependencies, thread: :destroy
     plugin :validation_helpers
+    plugin :uuid, field: :id
     plugin :timestamps
     plugin :whitelist_security
-    set_allowed_columns :members, :is_private, :link_expiration, :thread_id
+    set_allowed_columns :is_anonymous, :thread_id
 
     # methods to ensure that threads doesn't have to be called directly in code
     def save
@@ -84,12 +80,10 @@ module ScanChat
       JSON(
         {
           data: {
-            type: 'chatroom',
+            type: 'messageboard',
             attributes: {
               id:,
-              members:,
-              is_private:,
-              link_expiration:
+              is_anonymous:
             }
           }
         }, options

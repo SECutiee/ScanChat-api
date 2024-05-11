@@ -1,7 +1,0 @@
----
-- name: chatroom1
-  members: tristan, angel, fifi, ju
-  description: This is group number one
-- name: chatroom2
-  members: angel, fifi, ju
-  description: This is group number two

@@ -9,10 +9,17 @@ require 'yaml'
 require_relative 'test_load_all'
 
 def wipe_database
-  app.DB[:messages].delete
-  app.DB[:chatrooms].delete
+  ScanChat::Message.map(&:destroy)
+  ScanChat::Thread.map(&:destroy)
+  ScanChat::Chatroom.map(&:destroy)
+  ScanChat::Messageboard.map(&:destroy)
+  ScanChat::Account.map(&:destroy)
 end
 
-DATA = {} # rubocop:disable Style/MutableConstant
-DATA[:chatrooms] = YAML.safe_load_file('app/db/seeds/chatroom_seeds.yml')
-DATA[:messages] = YAML.safe_load_file('app/db/seeds/message_seeds.yml')
+DATA = {
+  accounts: YAML.safe_load_file('app/db/seeds/accounts_seed.yml'),
+  threads: YAML.safe_load_file('app/db/seeds/threads_seed.yml'),
+  messages: YAML.safe_load_file('app/db/seeds/messages_seed.yml'),
+  chatrooms: YAML.safe_load_file('app/db/seeds/threads_chatrooms.yml'),
+  messageboards: YAML.safe_load_file('app/db/seeds/threads_messageboards.yml')
+}.freeze

@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
+# rubocop:disable Style/HashSyntax, Style/SymbolArray, Metrics/BlockLength
 require 'rake/testtask'
 require './require_app'
 
-# rubocop:disable Style/HashSyntax, Style/SymbolArray
 task :default => :spec
 
 desc 'Tests API specs only'
@@ -15,6 +15,11 @@ desc 'Test all the specs'
 Rake::TestTask.new(:spec) do |t|
   t.pattern = 'spec/**/*_spec.rb'
   t.warning = false
+end
+
+desc 'Rerun tests on live code changes'
+task :respec do
+  sh 'rerun -c rake spec'
 end
 
 desc 'Runs rubocop on tested code'
@@ -41,41 +46,58 @@ task :console => :print_env do
   sh 'pry -r ./spec/test_load_all'
 end
 
-namespace :db do # rubocop:disable Metrics/BlockLength
-  task :load do
-    require_app(['config'])
-    require 'sequel'
+namespace :db do
+  require_app(['config'])
+  require 'sequel'
 
-    Sequel.extension :migration
-    @app = Chats::Api
-  end
-
-  task :load_models do
-    require_app(%w[config models])
-  end
+  Sequel.extension :migration
+  app = ScanChat::Api
 
   desc 'Run migrations'
-  task :migrate => [:load, :print_env] do
+  task :migrate => :print_env do
     puts 'Migrating database to latest'
-    Sequel::Migrator.run(@app.DB, 'app/db/migrations')
+    Sequel::Migrator.run(app.DB, 'app/db/migrations')
   end
 
-  desc 'Destroy data in database; maintain tables'
-  task :delete => :load_models do
-    Chats::Chatroom.dataset.destroy
+  desc 'Delete database'
+  task :delete do
+    app.DB[:messages].delete
+    app.DB[:chatrooms].delete
+    app.DB[:messageboards].delete
+    app.DB[:threads].delete
   end
 
   desc 'Delete dev or test database file'
-  task :drop => :load do
-    if @app.environment == :production
+  task :drop do
+    if app.environment == :production
       puts 'Cannot wipe production database!'
       return
     end
 
-    db_filename = "app/db/store/#{Chats::Api.environment}.db"
+    db_filename = "app/db/store/#{ScanChat::Api.environment}.db"
     FileUtils.rm(db_filename)
     puts "Deleted #{db_filename}"
   end
+
+  task :load_models do
+    require_app(%w[lib models services])
+  end
+
+  task :reset_seeds => [:load_models] do
+    app.DB[:schema_seeds].delete if app.DB.tables.include?(:schema_seeds)
+    ScanChat::Account.dataset.destroy
+  end
+
+  desc 'Seeds the development database'
+  task :seed => [:load_models] do
+    require 'sequel/extensions/seed'
+    Sequel::Seed.setup(:development)
+    Sequel.extension :seed
+    Sequel::Seeder.apply(app.DB, 'app/db/seeds')
+  end
+
+  desc 'Delete all data and reseed'
+  task reseed: [:reset_seeds, :seed]
 end
 
 namespace :newkey do
@@ -85,4 +107,4 @@ namespace :newkey do
     puts "DB_KEY: #{SecureDB.generate_key}"
   end
 end
-# rubocop:enable Style/HashSyntax, Style/SymbolArray
+# rubocop:enable Style/HashSyntax, Style/SymbolArray, Metrics/BlockLength

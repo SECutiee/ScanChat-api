@@ -6,10 +6,10 @@ require 'base64'
 require 'rbnacl'
 require 'time'
 
-module Chats
-  # Represents a message of a chatroom
+module ScanChat
+  # Represents a message of a thread
   class Message < Sequel::Model
-    many_to_one :chatroom
+    many_to_one :thread
 
     plugin :timestamps
     plugin :whitelist_security
@@ -38,7 +38,7 @@ module Chats
             }
           },
           included: {
-            chatroom:
+            thread:
           }
         }, options
       )

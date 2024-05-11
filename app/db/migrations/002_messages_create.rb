@@ -5,12 +5,13 @@ Sequel.migration do
   change do
     create_table(:messages) do
       primary_key :id
-      foreign_key :chatroom_id, table: :chatrooms
+      foreign_key :thread_id, table: :threads
       String :content_secure, null: false
       String :sender_id, null: false
+
       DateTime :created_at
       DateTime :updated_at
-      unique [:chatroom_id, :id]
+      unique [:thread_id, :id]
     end
   end
 end
