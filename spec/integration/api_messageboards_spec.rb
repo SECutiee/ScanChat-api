@@ -11,20 +11,19 @@ describe 'Test messageboards Handling' do ###
 
   describe 'Getting messageboards' do ###
     it 'HAPPY: should be able to get list of all messageboards' do ###
-      ScanChat::Thread.create(DATA[:threads][0]) ### ask
-      ScanChat::Thread.create(DATA[:threads][1]) ### ask
+      ScanChat::Thread.create(DATA[:threads][2])
 
       get 'api/v1/messageboards' ### ask should it be sth like => api/v1/threads/messageboards ??
       _(last_response.status).must_equal 200
 
       result = JSON.parse last_response.body
-      _(result['data'].count).must_equal 2
+      _(result['data'].count).must_equal 1
     end
 
     it 'HAPPY: should be able to get details of a single messageboard' do ###
       existing_thre = DATA[:threads][1] ###
       ScanChat::Thread.create(existing_thre) ###
-      id = ScanChat::Thread.first.id ###
+      id = ScanChat::Thread.order(Sequel.desc(:created_at)).first.id
 
       get "/api/v1/messageboards/#{id}" ### ask same Q in line 17
       _(last_response.status).must_equal 200
@@ -63,7 +62,7 @@ describe 'Test messageboards Handling' do ###
       _(last_response.headers['Location'].size).must_be :>, 0
 
       created = JSON.parse(last_response.body)['data']['data']['attributes']
-      thre = ScanChat::Thread.first ###
+      thre = ScanChat::Thread.order(Sequel.desc(:created_at)).first ###
 
       _(created['id']).must_equal thre.id ###
       _(created['name']).must_equal @thre_data['name'] ### ask

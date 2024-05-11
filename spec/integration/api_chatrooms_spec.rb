@@ -7,16 +7,12 @@ describe 'Test chatrooms Handling' do ###
 
   before do
     wipe_database
-
-    DATA[:threads].each do |thread_data|
-      ScanChat::Thread.create(thread_data)
-    end
   end
 
   describe 'Getting chatrooms' do ###
-    it 'HAPPY: should be able to get list of all chatrooms' do ###
-      ScanChat::Thread.create(DATA[:threads][0]) ### ask
-      ScanChat::Thread.create(DATA[:threads][1]) ### ask
+    it 'HAPPY: should be able to get list of all chatrooms' do
+      ScanChat::Thread.create(DATA[:threads][0])
+      ScanChat::Thread.create(DATA[:threads][1])
 
       get 'api/v1/chatrooms' ### ask should it be sth like => api/v1/threads/chatrooms ??
       _(last_response.status).must_equal 200
@@ -28,10 +24,10 @@ describe 'Test chatrooms Handling' do ###
     it 'HAPPY: should be able to get details of a single chatroom' do
       existing_thre = DATA[:threads][1]
       ScanChat::Thread.create(existing_thre)
-      thre_id = ScanChat::Thread.first.id
-      existing_chatr = DATA[:chatrooms].find(thread_name: existing_thre).first
-      ScanChat::Chatroom.create(thread_id: thre_id, is_private: existing_chatr['is_private'])
-      id = ScanChat::Chatroom.first.id
+      id = ScanChat::Thread.order(Sequel.desc(:created_at)).first.id
+      # existing_chatr = DATA[:chatrooms].find(thread_name: existing_thre).first
+      # ScanChat::Chatroom.create(thread_id: thre_id, is_private: existing_chatr['is_private'])
+      # id = ScanChat::Chatroom.first.id
 
       get "/api/v1/chatrooms/#{id}" ### ask same Q in line 17
       _(last_response.status).must_equal 200
@@ -70,7 +66,7 @@ describe 'Test chatrooms Handling' do ###
       _(last_response.headers['Location'].size).must_be :>, 0
 
       created = JSON.parse(last_response.body)['data']['data']['attributes']
-      thre = ScanChat::Thread.first ###
+      thre = ScanChat::Thread.order(Sequel.desc(:created_at)).first
 
       _(created['id']).must_equal thre.id ###
       _(created['name']).must_equal @thre_data['name'] ### ask

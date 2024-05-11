@@ -35,7 +35,7 @@ describe 'Test Message Handling' do
 
     message = thre.add_message(mes_data) ###
 
-    get "api/v1/chatrooms/#{chatr.id}/messages/#{message.id}"
+    get "api/v1/chatrooms/#{thre.id}/messages/#{message.id}"
     _(last_response.status).must_equal 200
 
     get "api/v1/messageboards/#{mesbor.id}/messages/#{message.id}" ### new add
@@ -69,7 +69,7 @@ describe 'Test Message Handling' do
       _(last_response.headers['Location'].size).must_be :>, 0
 
       created = JSON.parse(last_response.body)['data']['data']['attributes']
-      mes = ScanChat::Message.first ###
+      mes = ScanChat::Message.order(Sequel.desc(:created_at)).first
 
       _(created['id']).must_equal mes.id
       _(created['content']).must_equal @mes_data['content']
