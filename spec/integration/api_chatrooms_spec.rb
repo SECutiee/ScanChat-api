@@ -26,8 +26,11 @@ describe 'Test chatrooms Handling' do ###
     end
 
     it 'HAPPY: should be able to get details of a single chatroom' do
-      existing_thre = DATA[:chatrooms][1]
-      ScanChat::Chatroom.create(existing_thre)
+      existing_thre = DATA[:threads][1]
+      ScanChat::Thread.create(existing_thre)
+      thre_id = ScanChat::Thread.first.id
+      existing_chatr = DATA[:chatrooms].find(thread_name: existing_thre).first
+      ScanChat::Chatroom.create(thread_id: thre_id, is_private: existing_chatr['is_private'])
       id = ScanChat::Chatroom.first.id
 
       get "/api/v1/chatrooms/#{id}" ### ask same Q in line 17
