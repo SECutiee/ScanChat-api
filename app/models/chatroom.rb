@@ -18,14 +18,13 @@ module ScanChat
 
     # Plugins
     plugin :uuid, field: :id
-    # plugin :uuid, field: :thread_id
     plugin :association_dependencies, thread: :destroy
     plugin :validation_helpers
     plugin :timestamps
     plugin :whitelist_security
     set_allowed_columns :members, :is_private, :link_expiration, :thread_id
 
-    # methods to ensure that threads doesn't have to be called directly in code
+    # Method interface to access and modify properties of the associated thread
     def save
       super
       thread.save
