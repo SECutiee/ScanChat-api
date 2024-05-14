@@ -1,8 +1,8 @@
 ---
-  - username: angel
+  - username: angel.chung
     thread_name:
-      - Taggie
-  - username: ju
+      # - Taggie
+      - Emory
+  - username: ju.chen
     thread_name:
       - SECutiee
-      - Emory

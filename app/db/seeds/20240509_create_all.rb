@@ -3,12 +3,11 @@
 Sequel.seed(:development) do
   def run
     puts 'Seeding accounts, chatrooms, messageboards, messages'
-    create_accounts
-    create_owned_threads
-    create_chatrooms
-    create_messageboards
-    create_messages
-    add_members_to_chatrooms
+    # create_accounts
+    create_owned_chatrooms
+    # create_messageboards
+    # create_messages
+    # add_members_to_chatrooms
   end
 end
 
@@ -28,27 +27,32 @@ def create_accounts
   end
 end
 
-def create_owned_threads
+# def create_owned_threads
+#   OWNER_INFO.each do |owner|
+#     account = ScanChat::Account.first(username: owner['username'])
+#     owner['thread_name'].each do |thread_name|
+#       thre_data = THREAD_INFO.find { |thread| thread['name'] == thread_name }
+#       new_thread = ScanChat::Thread.create(thre_data)
+#       ScanChat::CreateThreadForOwner.call(
+#         owner_id: account.id, thread_data: new_thread
+#       )
+#     end
+#   end
+# end
+
+def create_owned_chatrooms
   OWNER_INFO.each do |owner|
     account = ScanChat::Account.first(username: owner['username'])
     owner['thread_name'].each do |thread_name|
-      thre_data = THREAD_INFO.find { |thread| thread['name'] == thread_name }
-      ScanChat::CreateThreadForOwner.call(
-        owner_id: account.id, thread_data: thre_data
-      )
-    end
-  end
-end
+      chatr_data = CHATROOM_INFO.find { |chatr| chatr['owner_username'] == owner['username'] }
+      next unless chatr_data
 
-def create_chatrooms
-  THREAD_INFO.each do |thread|
-    thre = ScanChat::Thread.first(name_secure: thread['name'])
-    chatr_data = CHATROOM_INFO.find do |chatroom|
-      thread['name'] == chatroom['thread_name'] && thread['type'] == 'chatroom'
+      new_chatroom = ScanChat::CreateChatroomForOwner.call(
+        owner_id: account.id, name: chatr_data['name'], is_private: chatr_data['is_private']
+      )
+      new_chatroom.description = chatr_data['description']
+      new_chatroom.save
     end
-    ScanChat::CreateChatroomForThread.call(
-      thread_id: thre.id, chatroom_data: chatr_data
-    )
   end
 end
 
@@ -78,10 +82,14 @@ end
 
 def add_members_to_chatrooms
   member_info = MEMBER_INFO
+  print(member_info)
   member_info.each do |thread|
+    print(thread)
     thre = ScanChat::Thread.first(name: thread['thread_name'])
+    print(thre)
     thread['username'].each do |member|
       account = ScanChat::Account.first(username: member)
+      print(account)
       ScanChat::AddMemberToChatroom.call(
         account: account.id, thread_id: thre.id
       )

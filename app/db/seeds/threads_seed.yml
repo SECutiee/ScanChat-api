@@ -1,7 +1,7 @@
 ---
-- name: Taggie
-  description: This is thread number one
-  thread_type: chatroom
+# - name: Taggie
+#   description: This is thread number one
+#   thread_type: chatroom
 - name: SECutiee
   description: This is thread number two
   thread_type: chatroom
