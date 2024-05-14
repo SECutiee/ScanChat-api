@@ -22,10 +22,6 @@ module ScanChat
     set_allowed_columns :is_anonymous, :thread_id
 
     # methods to ensure that threads doesn't have to be called directly in code
-    def save
-      super
-      thread.save
-    end
 
     def add_message(message_data)
       thread.add_message(message_data)
@@ -57,22 +53,22 @@ module ScanChat
 
     def name=(value)
       thread.name = value
-      # thread.save # potential performance implications
+      thread.save # potential performance implications
     end
 
     def description=(value)
       thread.description = value
-      # thread.save
+      thread.save
     end
 
     def expiration_date=(value)
       thread.expiration_date = value
-      # thread.save
+      thread.save
     end
 
     def owner=(value)
       thread.owner = value
-      # thread.save
+      thread.save
     end
 
     def to_json(options = {})

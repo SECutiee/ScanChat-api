@@ -13,6 +13,7 @@ module ScanChat
 
     plugin :timestamps
     plugin :whitelist_security
+
     set_allowed_columns :content, :sender_id
 
     # Secure getters and setters

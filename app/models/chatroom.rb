@@ -25,12 +25,6 @@ module ScanChat
     set_allowed_columns :members, :is_private, :link_expiration, :thread_id
 
     # Method interface to access and modify properties of the associated thread
-    def save
-      super
-      return unless thread
-
-      thread.save
-    end
 
     def add_message(message_data)
       thread.add_message(message_data)
@@ -62,22 +56,22 @@ module ScanChat
 
     def name=(value)
       thread.name = value
-      # thread.save # potential performance implications
+      thread.save # potential performance implications
     end
 
     def description=(value)
       thread.description = value
-      # thread.save
+      thread.save
     end
 
     def expiration_date=(value)
       thread.expiration_date = value
-      # thread.save
+      thread.save
     end
 
     def owner=(value)
       thread.owner = value
-      # thread.save
+      thread.save
     end
 
     # rubocop:disable Metrics/MethodLength

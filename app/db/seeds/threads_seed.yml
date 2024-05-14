@@ -1,10 +1,10 @@
----
-# - name: Taggie
-#   description: This is thread number one
+# ---
+# # - name: Taggie
+# #   description: This is thread number one
+# #   thread_type: chatroom
+# - name: SECutiee
+#   description: This is thread number two
 #   thread_type: chatroom
-- name: SECutiee
-  description: This is thread number two
-  thread_type: chatroom
-- name: Emory
-  description: This is thread number three
-  thread_type: messageboard
+# - name: Emory
+#   description: This is thread number three
+#   thread_type: messageboard

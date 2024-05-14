@@ -1,8 +1,0 @@
----
-# - thread_name: Taggie
-#   is_private: false
-
-- name: SECutiee
-  is_private: false
-  description: This is a chatroom
-  owner_username: ju.chen
