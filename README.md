@@ -28,7 +28,7 @@ bundle install
 
 ### Start the Server:
 ```sh
-rackup
+rake run:dev
 ```
 
 ## Usage

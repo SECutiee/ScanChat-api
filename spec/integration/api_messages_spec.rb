@@ -16,9 +16,10 @@ describe 'Test Message Handling' do
   it 'HAPPY: should be able to get a list of all messages' do
     thre = ScanChat::Thread.first ###
     DATA[:messages].each do |message_data| ###
-      thre.add_message(message_data) ###
+      thre.add_message(message_data) ### TODO: what's the meaning?
     end
-
+    # TODO: this is strange, why first chatrooms/ then mesgbrds/
+    # should implement some logic into the controller that prevents this?
     get "api/v1/chatrooms/#{thre.id}/messages" ### ask chatr.id
     _(last_response.status).must_equal 200
 
