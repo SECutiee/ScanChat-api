@@ -27,6 +27,8 @@ module ScanChat
     # Method interface to access and modify properties of the associated thread
     def save
       super
+      return unless thread
+
       thread.save
     end
 
@@ -82,14 +84,12 @@ module ScanChat
     def to_json(options = {})
       JSON(
         {
-          data: {
-            type: 'chatroom',
-            attributes: {
-              id:,
-              members:,
-              is_private:,
-              link_expiration:
-            }
+          type: 'chatroom',
+          attributes: {
+            id:,
+            members:,
+            is_private:,
+            link_expiration:
           }
         }, options
       )

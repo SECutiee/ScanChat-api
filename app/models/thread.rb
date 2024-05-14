@@ -67,15 +67,13 @@ module ScanChat
     def to_json(options = {})
       JSON(
         {
-          data: {
-            type: 'thread',
-            attributes: {
-              id:,
-              name:,
-              owner_id:,
-              description:,
-              expiration_date:
-            }
+          type: 'thread',
+          attributes: {
+            id:,
+            name:,
+            owner_id:,
+            description:,
+            expiration_date:
           }
         }, options
       )

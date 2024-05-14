@@ -75,20 +75,16 @@ module ScanChat
       # thread.save
     end
 
-    # rubocop:disable Metrics/MethodLength
     def to_json(options = {})
       JSON(
         {
-          data: {
-            type: 'messageboard',
-            attributes: {
-              id:,
-              is_anonymous:
-            }
+          type: 'messageboard',
+          attributes: {
+            id:,
+            is_anonymous:
           }
         }, options
       )
     end
-    # rubocop:enable Metrics/MethodLength
   end
 end

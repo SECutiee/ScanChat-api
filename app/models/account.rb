@@ -45,11 +45,12 @@ module ScanChat
       JSON(
         {
           type: 'account',
-          id:,
-          username:,
-          nickname:,
-          image:,
-          email:
+          attributes: {
+            username:,
+            nickname:,
+            image:,
+            email:
+          }
         }, options
       )
     end

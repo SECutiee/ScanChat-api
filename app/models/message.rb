@@ -29,15 +29,13 @@ module ScanChat
     def to_json(options = {})
       JSON(
         {
-          data: {
-            type: 'message',
-            attributes: {
-              id:,
-              content:,
-              sender_id:
-            }
+          type: 'message',
+          attributes: {
+            id:,
+            content:,
+            sender_id:
           },
-          included: {
+          include: {
             thread:
           }
         }, options

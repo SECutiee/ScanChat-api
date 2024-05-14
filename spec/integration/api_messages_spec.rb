@@ -25,8 +25,11 @@ describe 'Test Message Handling' do
     get "api/v1/messageboards/#{thre.id}/messages" ### new add
     _(last_response.status).must_equal 200
 
-    result = JSON.parse last_response.body
-    _(result['data'].count).must_equal DATA[:messages].count
+    result = JSON.parse(last_response.body)['data']
+    _(result.count).must_equal 5
+    result.each do |doc|
+      _(doc['type']).must_equal 'message'
+    end
   end
 
   it 'HAPPY: should be able to get details of a single message' do
@@ -42,9 +45,9 @@ describe 'Test Message Handling' do
     _(last_response.status).must_equal 200
 
     result = JSON.parse last_response.body
-    _(result['data']['attributes']['id']).must_equal message.id
-    _(result['data']['attributes']['content']).must_equal mes_data['content']
-    _(result['data']['attributes']['sender_id']).must_equal mes_data['sender_id']
+    _(result['attributes']['id']).must_equal message.id
+    _(result['attributes']['content']).must_equal mes_data['content']
+    _(result['attributes']['sender_id']).must_equal mes_data['sender_id']
   end
 
   it 'SAD: should return error if unknown message requested' do
@@ -68,7 +71,7 @@ describe 'Test Message Handling' do
       _(last_response.status).must_equal 201
       _(last_response.headers['Location'].size).must_be :>, 0
 
-      created = JSON.parse(last_response.body)['data']['data']['attributes']
+      created = JSON.parse(last_response.body)['data']['attributes']
       mes = ScanChat::Message.order(Sequel.desc(:created_at)).first
 
       _(created['id']).must_equal mes.id
