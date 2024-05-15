@@ -4,7 +4,7 @@ require 'roda'
 require_relative 'app'
 
 module ScanChat
-  # Web controller for Credence API
+  # Web controller for ScanChat API
   class Api < Roda
     route('auth') do |r|
       r.is 'authenticate' do

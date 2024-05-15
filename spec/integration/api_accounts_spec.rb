@@ -12,8 +12,8 @@ describe 'Test Account Handling' do
 
   describe 'Account information' do
     it 'HAPPY: should be able to get details of a single account' do
-      account_data = DATA[:accounts][1]
-      account = ScanChat::Account.create(account_data)
+      create_accounts(DATA[:accounts])
+      account = ScanChat::Account.first
 
       get "/api/v1/accounts/#{account.username}"
       _(last_response.status).must_equal 200

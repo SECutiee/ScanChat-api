@@ -22,7 +22,11 @@ module ScanChat
     plugin :validation_helpers
     plugin :timestamps
     plugin :whitelist_security
-    set_allowed_columns :members, :is_private, :link_expiration, :thread_id
+    set_allowed_columns :members, :is_private, :thread_id
+
+    plugin :association_dependencies,
+           thread: :destroy,
+           members: :nullify
 
     # Method interface to access and modify properties of the associated thread
 
@@ -83,7 +87,8 @@ module ScanChat
             id:,
             members:,
             is_private:,
-            link_expiration:
+            thread_id:,
+            thread:
           }
         }, options
       )

@@ -4,7 +4,7 @@ require 'roda'
 require_relative 'app'
 
 module ScanChat
-  # Web controller for Credence API
+  # Web controller for ScanChat API
   class Api < Roda
     route('chatrooms') do |r|
       @chatroom_route = "#{@api_root}/chatrooms"
@@ -43,42 +43,35 @@ module ScanChat
             Api.logger.warn "MASS-ASSIGNMENT: #{new_data.keys}"
             r.halt 400, { message: 'Illegal Attributes' }.to_json
           rescue StandardError => e
+            Api.logger.error "UNKNOWN ERROR: #{e.message}"
             r.halt 500, { message: e.message }.to_json
           end
         end
 
         # GET api/v1/chatrooms/[thread_id]
         r.get do
-          thread = Thread.first(id: thread_id)
-          thread ? thread.to_json : raise('Chatroom not found')
+          chatroom = Chatroom.first(thread_id: thread_id)
+          if chatroom
+            output = chatroom
+            JSON.pretty_generate(output)
+          else
+            raise 'Chatroom not found'
+          end
         rescue StandardError => e
+          Api.logger.error "UNKNOWN ERROR: #{e.message}"
           r.halt 404, { message: e.message }.to_json
         end
       end
 
       # GET api/v1/chatrooms
+      #TODO problem is that we only get chatrooms and not the attributes in threads
+      # maybe it doesn't matter since we will never use this function actually
       r.get do
-        output = { data: Thread.where(thread_type: 'chatroom').all }
+        output = { data: Chatroom.all }
         JSON.pretty_generate(output)
       rescue StandardError
-        r.halt 404, { message: 'Could not find any Chatrooms' }.to_json
-      end
-
-      # POST api/v1/chatrooms
-      r.post do
-        new_data = JSON.parse(r.body.read)
-        new_thread = Thread.new(new_data)
-        raise 'Could not create Chatroom' unless new_thread.save
-
-        response.status = 201
-        response['Location'] = "#{@thread_route}/#{new_thread.id}"
-        { message: 'Thread created', data: new_thread }.to_json
-      rescue Sequel::MassAssignmentRestriction
-        Api.logger.warn "MASS-ASSIGNMENT: #{new_data.keys}"
-        r.halt 400, { message: 'Illegal Attributes' }.to_json
-      rescue StandardError => e
         Api.logger.error "UNKNOWN ERROR: #{e.message}"
-        r.halt 500, { message: 'Unknown server error' }.to_json
+        r.halt 404, { message: 'Could not find any Chatrooms' }.to_json
       end
     end
   end

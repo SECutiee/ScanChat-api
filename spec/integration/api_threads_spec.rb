@@ -4,7 +4,7 @@
 
 # describe 'Test Thread Handling' do
 #   include Rack::Test::Methods
-
+# TODO: delete this file
 #   before do
 #     wipe_database
 #   end

@@ -21,6 +21,9 @@ module ScanChat
     plugin :whitelist_security
     set_allowed_columns :is_anonymous, :thread_id
 
+    plugin :association_dependencies,
+      thread: :destroy
+
     # methods to ensure that threads doesn't have to be called directly in code
 
     def add_message(message_data)
@@ -77,7 +80,9 @@ module ScanChat
           type: 'messageboard',
           attributes: {
             id:,
-            is_anonymous:
+            is_anonymous:,
+            thread:,
+            thread_id:
           }
         }, options
       )

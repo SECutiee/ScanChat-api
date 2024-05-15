@@ -37,7 +37,7 @@ module ScanChat
     end
 
     def password?(try_password)
-      password = Credence::Password.from_digest(password_digest)
+      password = ScanChat::Password.from_digest(password_digest)
       password.correct?(try_password)
     end
 
