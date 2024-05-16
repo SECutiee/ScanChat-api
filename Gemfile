@@ -32,7 +32,7 @@ group :development do
 end
 
 group :development, :test do
-  gem rack - test
+  gem 'rack-test'
   gem 'sequel-seed'
   gem 'sqlite3', '~>2.0'
 end
