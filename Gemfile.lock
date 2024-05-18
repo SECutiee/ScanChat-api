@@ -95,7 +95,7 @@ DEPENDENCIES
   roda (~> 3.1)
   rubocop
   rubocop-performance
-  sequel (~> 5.55)
+  sequel (~> 5.67)
   sequel-seed
   sqlite3 (~> 2.0)
 

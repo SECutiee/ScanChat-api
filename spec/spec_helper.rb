@@ -25,7 +25,6 @@ DATA = {
   members: YAML.safe_load_file('app/db/seeds/chatrooms_members.yml')
 }.freeze
 
-
 def create_accounts(account_data)
   account_data.each do |account_info|
     ScanChat::Account.create(account_info)
@@ -37,14 +36,14 @@ def create_owned_chatrooms(account_data, chatroom_data)
     account = ScanChat::Account.first(username: owner['username'])
     chatr_data = chatroom_data.select { |chatr| chatr['owner_username'] == owner['username'] }
 
-    chatr_data.each{|chatroom|
+    chatr_data.each  do |chatroom|
       new_chatroom = ScanChat::CreateChatroomForOwner.call(
         owner_id: account.id, name: chatroom['name'], is_private: chatroom['is_private']
       )
       new_chatroom.description = chatroom['description']
       new_chatroom.save
-    }
     end
+  end
 end
 
 def create_owned_messageboards(account_data, messageboard_data)
@@ -52,19 +51,19 @@ def create_owned_messageboards(account_data, messageboard_data)
     account = ScanChat::Account.first(username: owner['username'])
     msgb_data = messageboard_data.select { |msgb| msgb['owner_username'] == owner['username'] }
 
-    msgb_data.each{ |msgb|
+    msgb_data.each do |msgb|
       new_messageboard = ScanChat::CreateMessageboardForOwner.call(
         owner_id: account.id, name: msgb['name'], is_anonymous: msgb['is_anonymous']
       )
       new_messageboard.description = msgb['description']
       new_messageboard.save
-    }
+    end
   end
 end
 
-def add_messages (messages_data)
+def add_messages(messages_data)
   messages_data.each do |message|
-    thread = ScanChat::Thread.all.find{|thread|  thread.name == message['thread_name']}
+    thread = ScanChat::Thread.all.find { |thread| thread.name == message['thread_name'] }
     sender = ScanChat::Account.first(username: message['sender_username'])
     ScanChat::AddMessageToThread.call(thread_id: thread.id, content: message['content'], sender_id: sender.id)
   end
@@ -73,7 +72,7 @@ end
 def add_members_to_chatrooms(member_data)
   member_data.each do |member_chatroom|
     member_chatroom['username'].each do |username|
-      chatr_id = ScanChat::Chatroom.all.find{|chatroom| chatroom.name == member_chatroom['chatroom_name']}.id
+      chatr_id = ScanChat::Chatroom.all.find { |chatroom| chatroom.name == member_chatroom['chatroom_name'] }.id
       ScanChat::AddMemberToChatroom.call(username:, chatroom_id: chatr_id)
     end
   end
