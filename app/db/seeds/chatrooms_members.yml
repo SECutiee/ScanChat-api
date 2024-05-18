@@ -1,9 +1,9 @@
 ---
-  - thread_name: Taggie
+  - chatroom_name: Taggie
     username:
-      - angel
-      - fifi
-  - thread_name: SECutiee
+      - ju.chen
+      - fifi.ding
+  - chatroom_name: SECutiee
     username:
-      - ju
-      - fifi
+      - angel.chung
+      - fifi.ding

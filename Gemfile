@@ -17,10 +17,14 @@ gem 'rbnacl', '~>7.1'
 
 # Database
 gem 'hirb'
+<<<<<<< HEAD
+gem 'sequel', '~>5.67'
+=======
 gem 'sequel', '~>5.55'
 
 # Performance
 gem 'rubocop-performance'
+>>>>>>> 74beb272c4b288ac1dd456a980c7968c9ec8a7e2
 
 # Testing
 group :test do
@@ -42,6 +46,9 @@ end
 
 # Quality
 gem 'rubocop'
+
+# Performance
+gem 'rubocop-performance'
 
 # Parsing
 gem 'base64'

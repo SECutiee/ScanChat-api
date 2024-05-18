@@ -37,7 +37,7 @@ module ScanChat
     end
 
     def password?(try_password)
-      password = Credence::Password.from_digest(password_digest)
+      password = ScanChat::Password.from_digest(password_digest)
       password.correct?(try_password)
     end
 
@@ -45,11 +45,12 @@ module ScanChat
       JSON(
         {
           type: 'account',
-          id:,
-          username:,
-          nickname:,
-          image:,
-          email:
+          attributes: {
+            username:,
+            nickname:,
+            image:,
+            email:
+          }
         }, options
       )
     end

@@ -31,9 +31,17 @@ module ScanChat
         plugin :common_logger, $stdout
       end
 
-      # Custom events logging
-      LOGGER = Logger.new($stderr)
-      def self.logger = LOGGER
+      # # Custom events logging
+      # LOGGER = Logger.new($stderr)
+      # def self.logger = LOGGER
+
+      configure do
+        # Set up logging to a file
+        log_file_path = File.expand_path('../../log/api.log', __FILE__)
+        FileUtils.mkdir_p(File.dirname(log_file_path))
+        LOGGER = Logger.new(log_file_path, 'daily')
+        def self.logger = LOGGER
+      end
 
       # Load crypto keys
       SecureDB.setup(ENV.delete('DB_KEY'))
@@ -42,7 +50,7 @@ module ScanChat
 
     configure :development, :test do
       require 'pry'
-      logger.level = Logger::ERROR
+      logger.level = Logger::DEBUG
     end
   end
 end

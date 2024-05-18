@@ -1,0 +1,19 @@
+# Logfile created on 2024-05-16 15:41:03 +0800 by logger.rb/v1.6.0
+E, [2024-05-16T15:41:51.915953 #443916] ERROR -- : UNKNOWN ERROR: Messageboard not found
+E, [2024-05-16T15:41:53.932847 #443916] ERROR -- : UNKNOWN ERROR: Chatroom not found
+E, [2024-05-16T15:41:54.141934 #443916] ERROR -- : UNKNOWN ERROR: Chatroom not found
+W, [2024-05-16T15:41:55.008584 #443916]  WARN -- : MASS-ASSIGNMENT: ["username", "nickname", "email", "password", "created_at"]
+W, [2024-05-16T15:41:55.600256 #443916]  WARN -- : MASS-ASSIGNMENT: ["created_at"]
+W, [2024-05-16T15:41:56.072101 #443916]  WARN -- : MASS-ASSIGNMENT: ["created_at"]
+E, [2024-05-16T15:42:05.017716 #444045] ERROR -- : UNKNOWN ERROR: Messageboard not found
+E, [2024-05-16T15:42:05.694512 #444045] ERROR -- : UNKNOWN ERROR: Chatroom not found
+E, [2024-05-16T15:42:07.072009 #444045] ERROR -- : UNKNOWN ERROR: Chatroom not found
+W, [2024-05-16T15:42:07.898181 #444045]  WARN -- : MASS-ASSIGNMENT: ["created_at"]
+W, [2024-05-16T15:42:08.332798 #444045]  WARN -- : MASS-ASSIGNMENT: ["created_at"]
+W, [2024-05-16T15:42:08.538460 #444045]  WARN -- : MASS-ASSIGNMENT: ["username", "nickname", "email", "password", "created_at"]
+E, [2024-05-16T15:57:32.710098 #450410] ERROR -- : UNKNOWN ERROR: Messageboard not found
+W, [2024-05-16T15:57:33.090586 #450410]  WARN -- : MASS-ASSIGNMENT: ["created_at"]
+E, [2024-05-16T15:57:33.552579 #450410] ERROR -- : UNKNOWN ERROR: Chatroom not found
+E, [2024-05-16T15:57:33.860708 #450410] ERROR -- : UNKNOWN ERROR: Chatroom not found
+W, [2024-05-16T15:57:36.626681 #450410]  WARN -- : MASS-ASSIGNMENT: ["username", "nickname", "email", "password", "created_at"]
+W, [2024-05-16T15:57:37.230252 #450410]  WARN -- : MASS-ASSIGNMENT: ["created_at"]

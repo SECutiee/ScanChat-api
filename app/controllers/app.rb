@@ -4,7 +4,7 @@ require 'roda'
 require 'json'
 
 module ScanChat
-  # Web Controller for ScanChat API
+  # Web controller for ScanChat API
   class Api < Roda
     plugin :halt
     plugin :multi_route
@@ -22,9 +22,12 @@ module ScanChat
       routing.root do
         { message: 'ScanChatAPI up at /api/v1' }.to_json
       end
-      @api_root = 'api/v1'
-      routing.on @api_root do
-        routing.multi_route
+
+      routing.on 'api' do
+        routing.on 'v1' do
+          @api_root = 'api/v1'
+          routing.multi_route
+        end
       end
     end
   end

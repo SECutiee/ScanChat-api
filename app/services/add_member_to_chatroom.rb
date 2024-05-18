@@ -5,11 +5,11 @@ module ScanChat
   class AddMemberToChatroom
     # Error for owner cannot be member
     class OwnerNotMemberError < StandardError
-      def message = 'Owner cannot be member of project'
+      def message = 'Owner cannot be member of chatroom'
     end
 
-    def self.call(email:, chatroom_id:)
-      member = Account.first(email:)
+    def self.call(username:, chatroom_id:)
+      member = Account.first(username:)
       chatroom = Chatroom.first(id: chatroom_id)
       raise(OwnerNotMemberError) if chatroom.thread.owner.id == member.id
 

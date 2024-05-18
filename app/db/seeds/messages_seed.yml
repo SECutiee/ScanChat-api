@@ -1,11 +1,16 @@
 ---
-- content: Hello
-  sender_id: tristan 
-- content: Hi
-  sender_id: angel
-- content: How are you?
-  sender_id: fifi
-- content: I'm good
-  sender_id: ju
-- content: Hello World
-  sender_id: angel
+- thread_name: Taggie
+  content: Hello
+  sender_username: angel.chung 
+- thread_name: SECutiee
+  content: Hi
+  sender_username: ju.chen
+- thread_name: Emory
+  content: How are you?
+  sender_username: fifi.ding
+- thread_name: SECutiee
+  content: I'm good
+  sender_username: ju.chen
+- thread_name: Emory
+  content: Hello World
+  sender_username: angel.chung
