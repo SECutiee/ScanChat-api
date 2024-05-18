@@ -5,7 +5,7 @@ require_relative 'app'
 
 module ScanChat
   # Web controller for ScanChat API
-  class Api < Roda
+  class Api < Roda # rubocop:disable Metrics/ClassLength
     route('accounts') do |r|
       @acc_route = "#{@api_root}/accounts"
       # Api.logger.info "Received request " + r.path
@@ -67,11 +67,12 @@ module ScanChat
               new_data = JSON.parse(r.body.read)
               # Api.logger.info "Received request to create chatroom: #{new_data}"
 
-              account = Account.first(username: username) || raise('Account not found')
+              account = Account.first(username:) || raise('Account not found')
 
               # Api.logger.info "Found account: #{account.username}"
 
-              new_chatroom = CreateChatroomForOwner.call(owner_id: account.id, name: new_data['name'], is_private: new_data['is_private'])
+              new_chatroom = CreateChatroomForOwner.call(owner_id: account.id, name: new_data['name'],
+                                                         is_private: new_data['is_private'])
               raise 'Could not create Chatroom' unless new_chatroom
 
               # Api.logger.info "Created new chatroom: #{new_chatroom.id}"
@@ -126,11 +127,12 @@ module ScanChat
               new_data = JSON.parse(r.body.read)
               # Api.logger.info "Received request to create messageboard: #{new_data}"
 
-              account = Account.first(username: username) || raise('Account not found')
+              account = Account.first(username:) || raise('Account not found')
 
               # Api.logger.info "Found account: #{account.username}"
 
-              new_messageboard = CreateMessageboardForOwner.call(owner_id: account.id, name: new_data['name'], is_anonymous: new_data['is_anonymous'])
+              new_messageboard = CreateMessageboardForOwner.call(owner_id: account.id, name: new_data['name'],
+                                                                 is_anonymous: new_data['is_anonymous'])
               raise 'Could not create Messageboard' unless new_messageboard
 
               # Api.logger.info "Created new messageboard: #{new_messageboard.id}"

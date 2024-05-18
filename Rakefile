@@ -61,8 +61,13 @@ namespace :db do
 
   desc 'Delete database'
   task :delete do
+<<<<<<< HEAD
     # TODO: needs change we don't need to delete everything like this because of the cascading delets
     # professor: Credence::Account.dataset.destroy
+=======
+    # TODO: this is not necessary, see cascading deletes, also what about account
+    # see professor: Credence::Account.dataset.destroy
+>>>>>>> 74beb272c4b288ac1dd456a980c7968c9ec8a7e2
     app.DB[:messages].delete
     app.DB[:chatrooms].delete
     app.DB[:messageboards].delete

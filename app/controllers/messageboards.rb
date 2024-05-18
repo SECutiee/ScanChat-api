@@ -51,13 +51,11 @@ module ScanChat
         r.get do
           # thread = Thread.first(id: thread_id)
           # thread ? thread.to_json : raise('Messageboard not found')
-          messageboard = Messageboard.first(thread_id: thread_id)
-          if messageboard
-            output = messageboard
-            JSON.pretty_generate(output)
-          else
-            raise 'Messageboard not found'
-          end
+          messageboard = Messageboard.first(thread_id:)
+          raise 'Messageboard not found' unless messageboard
+
+          output = messageboard
+          JSON.pretty_generate(output)
         rescue StandardError => e
           Api.logger.error "UNKNOWN ERROR: #{e.message}"
           r.halt 404, { message: e.message }.to_json
@@ -73,23 +71,6 @@ module ScanChat
         Api.logger.error "UNKNOWN ERROR: #{e.message}"
         r.halt 404, { message: 'Could not find any Messageboards' }.to_json
       end
-
-      # # POST api/v1/messageboards TODO: remove
-      # r.post do
-      #   new_data = JSON.parse(r.body.read)
-      #   new_thread = Thread.new(new_data)
-      #   raise 'Could not create Messageboard' unless new_thread.save
-
-      #   response.status = 201
-      #   response['Location'] = "#{@thread_route}/#{new_thread.id}"
-      #   { message: 'Thread created', data: new_thread }.to_json
-      # rescue Sequel::MassAssignmentRestriction
-      #   Api.logger.warn "MASS-ASSIGNMENT: #{new_data.keys}"
-      #   r.halt 400, { message: 'Illegal Attributes' }.to_json
-      # rescue StandardError => e
-      #   Api.logger.error "UNKNOWN ERROR: #{e.message}"
-      #   r.halt 500, { message: 'Unknown server error' }.to_json
-      # end
     end
   end
 end
