@@ -50,13 +50,11 @@ module ScanChat
 
         # GET api/v1/chatrooms/[thread_id]
         r.get do
-          chatroom = Chatroom.first(thread_id: thread_id)
-          if chatroom
-            output = chatroom
-            JSON.pretty_generate(output)
-          else
-            raise 'Chatroom not found'
-          end
+          chatroom = Chatroom.first(thread_id:)
+          raise 'Chatroom not found' unless chatroom
+
+          output = chatroom
+          JSON.pretty_generate(output)
         rescue StandardError => e
           Api.logger.error "UNKNOWN ERROR: #{e.message}"
           r.halt 404, { message: e.message }.to_json
@@ -64,7 +62,7 @@ module ScanChat
       end
 
       # GET api/v1/chatrooms
-      #TODO problem is that we only get chatrooms and not the attributes in threads
+      # TODO problem is that we only get chatrooms and not the attributes in threads
       # maybe it doesn't matter since we will never use this function actually
       r.get do
         output = { data: Chatroom.all }

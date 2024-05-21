@@ -51,13 +51,11 @@ module ScanChat
         r.get do
           # thread = Thread.first(id: thread_id)
           # thread ? thread.to_json : raise('Messageboard not found')
-          messageboard = Messageboard.first(thread_id: thread_id)
-          if messageboard
-            output = messageboard
-            JSON.pretty_generate(output)
-          else
-            raise 'Messageboard not found'
-          end
+          messageboard = Messageboard.first(thread_id:)
+          raise 'Messageboard not found' unless messageboard
+
+          output = messageboard
+          JSON.pretty_generate(output)
         rescue StandardError => e
           Api.logger.error "UNKNOWN ERROR: #{e.message}"
           r.halt 404, { message: e.message }.to_json

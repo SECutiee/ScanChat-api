@@ -2,19 +2,19 @@
 
 require_relative '../spec_helper'
 
-describe 'Test chatrooms Handling' do ###
+describe 'Test chatrooms Handling' do
   include Rack::Test::Methods
 
   before do
     wipe_database
   end
 
-  describe 'Getting chatrooms' do ###
+  describe 'Getting chatrooms' do
     it 'HAPPY: should be able to get list of all chatrooms' do
       create_accounts(DATA[:accounts])
       create_owned_chatrooms(DATA[:accounts], DATA[:chatrooms])
 
-      get 'api/v1/chatrooms' ### ask should it be sth like => api/v1/threads/chatrooms ??
+      get 'api/v1/chatrooms'
       _(last_response.status).must_equal 200
 
       result = JSON.parse last_response.body
@@ -41,7 +41,7 @@ describe 'Test chatrooms Handling' do ###
       add_members_to_chatrooms(DATA[:members])
       account = ScanChat::Account.first
 
-      get "api/v1/accounts/#{account.username}/joined_chatrooms" # TODO: maybe change route
+      get "api/v1/accounts/#{account.username}/joined_chatrooms"
       _(last_response.status).must_equal 200
 
       result = JSON.parse last_response.body
@@ -55,7 +55,7 @@ describe 'Test chatrooms Handling' do ###
       thread = ScanChat::Thread.order(Sequel.desc(:created_at)).first
       thread_id = thread.id
 
-      get "/api/v1/chatrooms/#{thread_id}" ### ask same Q in line 17
+      get "/api/v1/chatrooms/#{thread_id}"
       _(last_response.status).must_equal 200
 
       result = JSON.parse last_response.body
@@ -63,8 +63,8 @@ describe 'Test chatrooms Handling' do ###
       _(result['attributes']['thread']['attributes']['name']).must_equal thread.name
     end
 
-    it 'SAD: should return error if unknown chatroom requested' do ###
-      get '/api/v1/chatrooms/foobar' ### ask
+    it 'SAD: should return error if unknown chatroom requested' do
+      get '/api/v1/chatrooms/foobar'
 
       _(last_response.status).must_equal 404
     end
@@ -80,11 +80,11 @@ describe 'Test chatrooms Handling' do ###
     end
   end
 
-  describe 'Creating New Chatrooms' do ###
+  describe 'Creating New Chatrooms' do
     before do
       wipe_database
       @req_header = { 'CONTENT_TYPE' => 'application/json' }
-      @chatr_data = DATA[:chatrooms][0].dup ### ask
+      @chatr_data = DATA[:chatrooms][0].dup
       @chatr_owner_username = @chatr_data.delete('owner_username')
       create_accounts(DATA[:accounts])
     end
@@ -98,14 +98,14 @@ describe 'Test chatrooms Handling' do ###
       created = JSON.parse(last_response.body)['data']['attributes']
       chatr = ScanChat::Chatroom.order(Sequel.desc(:created_at)).first
 
-      _(created['id']).must_equal chatr.id ###
+      _(created['id']).must_equal chatr.id
       _(created['thread_id']).must_equal chatr.thread.id
       _(created['thread']['attributes']['name']).must_equal @chatr_data['name']
       _(created['thread']['attributes']['description']).must_equal @chatr_data['description']
     end
 
-    it 'SECURITY: should not create chatroom with mass assignment' do ###
-      bad_data = @chatr_data.clone ###
+    it 'SECURITY: should not create chatroom with mass assignment' do
+      bad_data = @chatr_data.clone
       bad_data['created_at'] = '1900-01-01'
       post "api/v1/accounts/#{@chatr_owner_username}/chatrooms", bad_data.to_json, @req_header ###
 

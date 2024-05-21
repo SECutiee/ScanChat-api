@@ -14,6 +14,7 @@ module ScanChat
     end
 
     route do |routing|
+      # Api.logger.info 'Start routing'
       response['Content-Type'] = 'application/json'
 
       secure_request?(routing) ||

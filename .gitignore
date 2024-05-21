@@ -3,4 +3,4 @@ _*
 .irb_history
 app/db/store/*.db
 config/secrets.yml
-log/*.log
+log/*

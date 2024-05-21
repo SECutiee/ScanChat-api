@@ -63,10 +63,13 @@ namespace :db do
   task :delete do
     # TODO: needs change we don't need to delete everything like this because of the cascading delets
     # professor: Credence::Account.dataset.destroy
-    app.DB[:messages].delete
-    app.DB[:chatrooms].delete
-    app.DB[:messageboards].delete
-    app.DB[:threads].delete
+    # app.DB[:messages].delete
+    # app.DB[:chatrooms].delete
+    # app.DB[:messageboards].delete
+    # app.DB[:threads].delete
+    ScanChat::Chatroom.dataset.destroy
+    ScanChat::Messageboard.dataset.destroy
+    ScanChat::Account.dataset.destroy
   end
 
   desc 'Delete dev or test database file'
@@ -87,6 +90,8 @@ namespace :db do
 
   task :reset_seeds => [:load_models] do
     app.DB[:schema_seeds].delete if app.DB.tables.include?(:schema_seeds)
+    ScanChat::Chatroom.dataset.destroy
+    ScanChat::Messageboard.dataset.destroy
     ScanChat::Account.dataset.destroy
   end
 
