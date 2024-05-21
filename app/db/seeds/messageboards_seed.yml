@@ -1,0 +1,5 @@
+---
+- name: Emory
+  is_anonymous: false
+  description: this is a messageboard
+  owner_username: angel.chung

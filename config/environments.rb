@@ -32,7 +32,13 @@ module ScanChat
       end
 
       # Custom events logging
-      LOGGER = Logger.new($stderr)
+      # LOGGER = Logger.new($stderr)
+      # def self.logger = LOGGER
+
+      # Set up logging to a file
+      log_file_path = File.expand_path('../log/api.log', __dir__)
+      FileUtils.mkdir_p(File.dirname(log_file_path))
+      LOGGER = Logger.new(log_file_path, 'daily')
       def self.logger = LOGGER
 
       # Load crypto keys
@@ -42,7 +48,7 @@ module ScanChat
 
     configure :development, :test do
       require 'pry'
-      logger.level = Logger::ERROR
+      logger.level = Logger::DEBUG
     end
   end
 end

@@ -4,7 +4,7 @@ require 'roda'
 require_relative 'app'
 
 module ScanChat
-  # Web controller for Credence API
+  # Web controller for ScanChat API
   class Api < Roda
     route('messageboards') do |r|
       @chatroom_route = "#{@api_root}/messageboards"
@@ -49,37 +49,45 @@ module ScanChat
 
         # GET api/v1/messageboards/[thread_id]
         r.get do
-          thread = Thread.first(id: thread_id)
-          thread ? thread.to_json : raise('Messageboard not found')
+          # thread = Thread.first(id: thread_id)
+          # thread ? thread.to_json : raise('Messageboard not found')
+          messageboard = Messageboard.first(thread_id:)
+          raise 'Messageboard not found' unless messageboard
+
+          output = messageboard
+          JSON.pretty_generate(output)
         rescue StandardError => e
+          Api.logger.error "UNKNOWN ERROR: #{e.message}"
           r.halt 404, { message: e.message }.to_json
         end
       end
 
       # GET api/v1/messageboards
+      # TODO probnlem is that we only get msgb and not the attributes in threads
       r.get do
-        output = { data: Thread.where(thread_type: 'messageboard').all }
+        output = { data: Messageboard.all }
         JSON.pretty_generate(output)
       rescue StandardError
+        Api.logger.error "UNKNOWN ERROR: #{e.message}"
         r.halt 404, { message: 'Could not find any Messageboards' }.to_json
       end
 
-      # POST api/v1/messageboards
-      r.post do
-        new_data = JSON.parse(r.body.read)
-        new_thread = Thread.new(new_data)
-        raise 'Could not create Messageboard' unless new_thread.save
+      # # POST api/v1/messageboards TODO: remove
+      # r.post do
+      #   new_data = JSON.parse(r.body.read)
+      #   new_thread = Thread.new(new_data)
+      #   raise 'Could not create Messageboard' unless new_thread.save
 
-        response.status = 201
-        response['Location'] = "#{@thread_route}/#{new_thread.id}"
-        { message: 'Thread created', data: new_thread }.to_json
-      rescue Sequel::MassAssignmentRestriction
-        Api.logger.warn "MASS-ASSIGNMENT: #{new_data.keys}"
-        r.halt 400, { message: 'Illegal Attributes' }.to_json
-      rescue StandardError => e
-        Api.logger.error "UNKNOWN ERROR: #{e.message}"
-        r.halt 500, { message: 'Unknown server error' }.to_json
-      end
+      #   response.status = 201
+      #   response['Location'] = "#{@thread_route}/#{new_thread.id}"
+      #   { message: 'Thread created', data: new_thread }.to_json
+      # rescue Sequel::MassAssignmentRestriction
+      #   Api.logger.warn "MASS-ASSIGNMENT: #{new_data.keys}"
+      #   r.halt 400, { message: 'Illegal Attributes' }.to_json
+      # rescue StandardError => e
+      #   Api.logger.error "UNKNOWN ERROR: #{e.message}"
+      #   r.halt 500, { message: 'Unknown server error' }.to_json
+      # end
     end
   end
 end
