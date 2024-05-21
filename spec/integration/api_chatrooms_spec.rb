@@ -113,14 +113,4 @@ describe 'Test chatrooms Handling' do
       _(last_response.headers['Location']).must_be_nil
     end
   end
-
-  describe 'Joining Chatrooms' do
-  end
-
-  describe 'Leaving Chatrooms' do
-  end
-
-  describe 'Deleting Chatrooms' do
-
-  end
 end

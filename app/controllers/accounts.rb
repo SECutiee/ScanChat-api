@@ -69,9 +69,12 @@ module ScanChat
               # Api.logger.info "Received request to create chatroom: #{new_data}"
 
               account = Account.first(username:) || raise('Account not found')
+              account = Account.first(username:) || raise('Account not found')
 
               # Api.logger.info "Found account: #{account.username}"
 
+              new_chatroom = CreateChatroomForOwner.call(owner_id: account.id, name: new_data['name'],
+                                                         is_private: new_data['is_private'])
               new_chatroom = CreateChatroomForOwner.call(owner_id: account.id, name: new_data['name'],
                                                          is_private: new_data['is_private'])
               raise 'Could not create Chatroom' unless new_chatroom
@@ -129,9 +132,12 @@ module ScanChat
               # Api.logger.info "Received request to create messageboard: #{new_data}"
 
               account = Account.first(username:) || raise('Account not found')
+              account = Account.first(username:) || raise('Account not found')
 
               # Api.logger.info "Found account: #{account.username}"
 
+              new_messageboard = CreateMessageboardForOwner.call(owner_id: account.id, name: new_data['name'],
+                                                                 is_anonymous: new_data['is_anonymous'])
               new_messageboard = CreateMessageboardForOwner.call(owner_id: account.id, name: new_data['name'],
                                                                  is_anonymous: new_data['is_anonymous'])
               raise 'Could not create Messageboard' unless new_messageboard

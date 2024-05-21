@@ -43,6 +43,8 @@ def create_owned_chatrooms(account_data, chatroom_data)
       new_chatroom.save
     end
   end
+    end
+  end
 end
 
 def create_owned_messageboards(account_data, messageboard_data)
@@ -56,9 +58,11 @@ def create_owned_messageboards(account_data, messageboard_data)
       new_messageboard.description = msgb['description']
       new_messageboard.save
     end
+    end
   end
 end
 
+def add_messages(messages_data)
 def add_messages(messages_data)
   messages_data.each do |message|
     thread = ScanChat::Thread.all.find { |thr| thr.name == message['thread_name'] }
@@ -70,6 +74,7 @@ end
 def add_members_to_chatrooms(member_data)
   member_data.each do |member_chatroom|
     member_chatroom['username'].each do |username|
+      chatr_id = ScanChat::Chatroom.all.find { |chatroom| chatroom.name == member_chatroom['chatroom_name'] }.id
       chatr_id = ScanChat::Chatroom.all.find { |chatroom| chatroom.name == member_chatroom['chatroom_name'] }.id
       ScanChat::AddMemberToChatroom.call(username:, chatroom_id: chatr_id)
     end
