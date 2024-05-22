@@ -114,3 +114,12 @@ describe 'Test chatrooms Handling' do
     end
   end
 end
+
+# describe 'Joining Chatroom' do
+# end
+
+# describe 'Leaving Chatroom' do
+# end
+
+# describe 'Deleting Chatroom' do
+# end
