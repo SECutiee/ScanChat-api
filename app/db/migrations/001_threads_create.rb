@@ -5,7 +5,7 @@ Sequel.migration do
   change do
     create_table(:threads) do
       uuid :id, primary_key: true
-      add_foreign_key :owner_id, table: :accounts
+      uuid :owner_id, type: :uuid, foreign_key: { table: :accounts, key: :id, type: :uuid }
 
       String :thread_type, null: false
       String :name_secure, null: false
