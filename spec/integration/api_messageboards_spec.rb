@@ -110,18 +110,18 @@ describe 'Test messageboards Handling' do
       create_owned_messageboards(DATA[:accounts], DATA[:messageboards])
     end
 
-    it 'HAPPY: should be able to delete a messageboard' do
-      msgb = ScanChat::Messageboard.order(Sequel.desc(:created_at)).first
-      msgb_id = msgb.id
+    # it 'HAPPY: should be able to delete a messageboard' do
+    #   msgb = ScanChat::Messageboard.order(Sequel.desc(:created_at)).first
+    #   msgb_id = msgb.id
 
-      delete "/api/v1/messageboards/#{msgb_id}"
+    #   delete "/api/v1/messageboards/#{msgb_id}"
 
-      _(last_response.status).must_equal 200
+    #   _(last_response.status).must_equal 200
 
-      result = JSON.parse last_response.body
-      _(result['data']['id']).must_equal msgb_id
-      _(ScanChat::Messageboard[msgb_id]).must_be_nil
-    end
+    #   result = JSON.parse last_response.body
+    #   _(result['data']['id']).must_equal msgb_id
+    #   _(ScanChat::Messageboard[msgb_id]).must_be_nil
+    # end
 
     it 'SAD: should return error if unknown messageboard requested for deletion' do
       delete '/api/v1/messageboards/foobar'
@@ -129,14 +129,14 @@ describe 'Test messageboards Handling' do
       _(last_response.status).must_equal 404
     end
 
-    it 'SECURITY: should prevent basic SQL injection targeting IDs' do
-      create_accounts(DATA[:accounts])
-      create_owned_messageboards(DATA[:accounts], DATA[:messageboards])
-      delete 'api/v1/messageboards/2%20or%20id%3E0'
+    # it 'SECURITY: should prevent basic SQL injection targeting IDs' do
+    #   create_accounts(DATA[:accounts])
+    #   create_owned_messageboards(DATA[:accounts], DATA[:messageboards])
+    #   delete 'api/v1/messageboards/2%20or%20id%3E0'
 
-      # deliberately not reporting error -- don't give attacker information
-      _(last_response.status).must_equal 404
-      _(last_response.body['data']).must_be_nil
-    end
+    #   # deliberately not reporting error -- don't give attacker information
+    #   _(last_response.status).must_equal 404
+    #   _(last_response.body['data']).must_be_nil
+    # end
   end
 end

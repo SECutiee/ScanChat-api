@@ -47,33 +47,39 @@ task :console => :print_env do
 end
 
 namespace :db do
-  require_app(['config'])
-  require 'sequel'
+  task :load do
+    require_app(nil) # loads config code files only
+    require 'sequel'
 
-  Sequel.extension :migration
-  app = ScanChat::Api
+    Sequel.extension :migration
+    @app = ScanChat::Api
+  end
+
+  task :load_models => :load do
+    require_app(%w[lib models services])
+  end
 
   desc 'Run migrations'
-  task :migrate => :print_env do
+  task :migrate =>  [:load, :print_env] do
     puts 'Migrating database to latest'
     Sequel::Migrator.run(app.DB, 'app/db/migrations')
   end
 
   desc 'Delete database'
-  task :delete do
+  task :delete => :load do
     # TODO: needs change we don't need to delete everything like this because of the cascading delets
     # professor: Credence::Account.dataset.destroy
     # app.DB[:messages].delete
     # app.DB[:chatrooms].delete
     # app.DB[:messageboards].delete
     # app.DB[:threads].delete
-    ScanChat::Chatroom.dataset.destroy
-    ScanChat::Messageboard.dataset.destroy
+    # ScanChat::Chatroom.dataset.destroy # TODO: fix this
+    # ScanChat::Messageboard.dataset.destroy
     ScanChat::Account.dataset.destroy
   end
 
   desc 'Delete dev or test database file'
-  task :drop do
+  task :drop => :load do
     if app.environment == :production
       puts 'Cannot wipe production database!'
       return
@@ -88,19 +94,17 @@ namespace :db do
     require_app(%w[lib models services])
   end
 
-  task :reset_seeds => [:load_models] do
+  task :reset_seeds => :load_models do
     app.DB[:schema_seeds].delete if app.DB.tables.include?(:schema_seeds)
-    ScanChat::Chatroom.dataset.destroy
-    ScanChat::Messageboard.dataset.destroy
-    ScanChat::Account.dataset.destroy
+    ScanChat::Account.dataset.destroy # TODO: fix this
   end
 
   desc 'Seeds the development database'
-  task :seed => [:load_models] do
+  task :seed => :load_models do
     require 'sequel/extensions/seed'
     Sequel::Seed.setup(:development)
     Sequel.extension :seed
-    Sequel::Seeder.apply(app.DB, 'app/db/seeds')
+    Sequel::Seeder.apply(@app.DB, 'app/db/seeds')
   end
 
   desc 'Delete all data and reseed'
