@@ -2,10 +2,10 @@
 
 module ScanChat
   # Create new configuration for a thread
-  class DeleteChatroomByThreadId
+  class DeleteMessageboardByThreadId
     def self.call(thread_id:)
-      chatroom = ScanChat::Thread.find(id: thread_id).chatroom
-      chatroom.destroy
+      messageboard = ScanChat::Thread.find(id: thread_id).messageboard
+      messageboard.destroy
     end
   end
 end

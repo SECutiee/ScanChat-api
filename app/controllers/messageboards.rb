@@ -77,22 +77,17 @@ module ScanChat
         r.halt 404, { message: 'Could not find any Messageboards' }.to_json
       end
 
-      # # POST api/v1/messageboards TODO: remove
-      # r.post do
-      #   new_data = JSON.parse(r.body.read)
-      #   new_thread = Thread.new(new_data)
-      #   raise 'Could not create Messageboard' unless new_thread.save
+      # DELETE api/v1/messageboards/[thread_id]
+      r.delete String do |thread_id|
+        thread = Thread.first(id: thread_id)
+        raise 'Messageboard not found' unless thread
 
-      #   response.status = 201
-      #   response['Location'] = "#{@thread_route}/#{new_thread.id}"
-      #   { message: 'Thread created', data: new_thread }.to_json
-      # rescue Sequel::MassAssignmentRestriction
-      #   Api.logger.warn "MASS-ASSIGNMENT: #{new_data.keys}"
-      #   r.halt 400, { message: 'Illegal Attributes' }.to_json
-      # rescue StandardError => e
-      #   Api.logger.error "UNKNOWN ERROR: #{e.message}"
-      #   r.halt 500, { message: 'Unknown server error' }.to_json
-      # end
+        DeleteMessageboardByThreadId(thread_id:)
+        { message: 'Messageboard deleted' }.to_json
+      rescue StandardError => e
+        Api.logger.error "UNKNOWN ERROR: #{e.message}"
+        r.halt 404, { message: e.message }.to_json
+      end
     end
   end
 end
