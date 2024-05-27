@@ -15,6 +15,7 @@ gem 'rake', '~>13.0'
 # Security
 gem 'bundler-audit'
 gem 'rbnacl', '~>7.1'
+gem 'rexml', '>= 3.2.7'
 
 # Database
 gem 'hirb', '~>0.7'
