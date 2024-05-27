@@ -70,11 +70,12 @@ module ScanChat
       # GET api/v1/messageboards
       # TODO probnlem is that we only get msgb and not the attributes in threads
       r.get do
-        output = { data: Messageboard.all }
-        JSON.pretty_generate(output)
+        account = Account.first(username: @auth_account['username'])
+        messageboards = account.messageboards
+        JSON.pretty_generate(data: messageboards)
       rescue StandardError
         Api.logger.error "UNKNOWN ERROR: #{e.message}"
-        r.halt 404, { message: 'Could not find any Messageboards' }.to_json
+        r.halt 403, { message: 'Could not find any Messageboards' }.to_json
       end
 
       # DELETE api/v1/messageboards/[thread_id]

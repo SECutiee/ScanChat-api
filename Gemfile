@@ -26,6 +26,9 @@ end
 # Encoding
 gem 'base64', '~>0.2'
 
+# External Services
+gem 'http'
+
 # Testing
 group :test do
   gem 'minitest'
@@ -34,12 +37,13 @@ end
 
 # Debugging
 gem 'pry' # necessary for rake console
+gem 'rack-test'
 
 # Development
 group :development do
   # debugging
   gem 'rerun'
-  
+
   # Quality
   gem 'rubocop'
 
@@ -48,10 +52,7 @@ group :development do
 end
 
 group :development, :test do
-  # API testing
-  gem 'rack-test'
-
-  # Database
+  # Dev/test Database
   gem 'sequel-seed'
   gem 'sqlite3', '~>1.6'
 end

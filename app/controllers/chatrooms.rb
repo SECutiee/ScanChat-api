@@ -61,15 +61,16 @@ module ScanChat
         end
       end
 
-      # GET api/v1/chatrooms
+      # GET api/v1/chatrooms/
       # TODO problem is that we only get chatrooms and not the attributes in threads
       # maybe it doesn't matter since we will never use this function actually
       r.get do
-        output = { data: Chatroom.all }
-        JSON.pretty_generate(output)
+        account = Account.first(username: @auth_account['username'])
+        chatrooms = account.chatrooms
+        JSON.pretty_generate(data: chatrooms)
       rescue StandardError
         Api.logger.error "UNKNOWN ERROR: #{e.message}"
-        r.halt 404, { message: 'Could not find any Chatrooms' }.to_json
+        r.halt 403, { message: 'Could not find any Chatrooms' }.to_json
       end
     end
   end
