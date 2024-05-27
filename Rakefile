@@ -80,7 +80,7 @@ namespace :db do
 
   desc 'Delete dev or test database file'
   task :drop => :load do
-    if app.environment == :production
+    if @app.environment == :production
       puts 'Cannot wipe production database!'
       return
     end
@@ -90,13 +90,9 @@ namespace :db do
     puts "Deleted #{db_filename}"
   end
 
-  task :load_models do
-    require_app(%w[lib models services])
-  end
-
   task :reset_seeds => :load_models do
-    app.DB[:schema_seeds].delete if app.DB.tables.include?(:schema_seeds)
-    ScanChat::Account.dataset.destroy # TODO: fix this
+    @app.DB[:schema_seeds].delete if @app.DB.tables.include?(:schema_seeds)
+    ScanChat::Account.dataset.destroy
   end
 
   desc 'Seeds the development database'
