@@ -129,10 +129,8 @@ describe 'Test messageboards Handling' do
       _(last_response.status).must_equal 404
     end
 
-    # it 'SECURITY: should prevent basic SQL injection targeting IDs' do
-    #   create_accounts(DATA[:accounts])
-    #   create_owned_messageboards(DATA[:accounts], DATA[:messageboards])
-    #   delete 'api/v1/messageboards/2%20or%20id%3E0'
+    it 'SECURITY: should prevent basic SQL injection targeting IDs' do
+      delete 'api/v1/messageboards/2%20or%20id%3E0'
 
     #   # deliberately not reporting error -- don't give attacker information
     #   _(last_response.status).must_equal 404

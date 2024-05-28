@@ -37,7 +37,7 @@ module ScanChat
     def html_email
       <<~END_EMAIL
         <H1>ScanChat App Registration Received</H1>
-        <p>Please <a href=\"#{@registration[:verification_url]}\">click here</a>
+        <p>Please <a href='#{@registration[:verification_url]}'>click here</a>
         to validate your email.
         You will be asked to set a password to activate your account.</p>
       END_EMAIL
@@ -49,7 +49,7 @@ module ScanChat
           to: [{ 'email' => @registration[:email] }]
         }],
         from: { 'email' => from_email },
-        subject: 'Credent Registration Verification',
+        subject: 'ScanChat Registration Verification',
         content: [
           { type: 'text/html',
             value: html_email }

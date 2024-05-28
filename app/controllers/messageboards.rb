@@ -67,17 +67,6 @@ module ScanChat
         end
       end
 
-      # GET api/v1/messageboards
-      # TODO probnlem is that we only get msgb and not the attributes in threads
-      r.get do
-        account = Account.first(username: @auth_account['username'])
-        messageboards = account.messageboards
-        JSON.pretty_generate(data: messageboards)
-      rescue StandardError
-        Api.logger.error "UNKNOWN ERROR: #{e.message}"
-        r.halt 403, { message: 'Could not find any Messageboards' }.to_json
-      end
-
       # DELETE api/v1/messageboards/[thread_id]
       r.delete String do |thread_id|
         thread = Thread.first(id: thread_id)
@@ -88,6 +77,33 @@ module ScanChat
       rescue StandardError => e
         Api.logger.error "UNKNOWN ERROR: #{e.message}"
         r.halt 404, { message: e.message }.to_json
+      end
+
+      # TODO: problem is that we only get msgb and not the attributes in threads
+      # GET api/v1/messageboards
+      r.get do
+        account = Account.first(username: @auth_account['username'])
+        messageboards = account.messageboards
+        JSON.pretty_generate(data: messageboards)
+      rescue StandardError
+        routing.halt 403, { message: 'Could not find any messageboards' }.to_json
+      end
+
+      # POST api/v1/messageboards
+      r.post do
+        new_data = JSON.parse(r.body.read)
+        new_msgb = Messageboard.new(new_data)
+        raise('Could not save messageboard') unless new_msgb.save
+
+        response.status = 201
+        response['Location'] = "#{@msgb_route}/#{new_msgb.id}"
+        { message: 'Messageboard saved', data: new_msgb }.to_json
+      rescue Sequel::MassAssignmentRestriction
+        Api.logger.warn "MASS-ASSIGNMENT: #{new_data.keys}"
+        r.halt 400, { message: 'Illegal Attributes' }.to_json
+      rescue StandardError => e
+        Api.logger.error "UNKOWN ERROR: #{e.message}"
+        r.halt 500, { message: 'Unknown server error' }.to_json
       end
     end
   end

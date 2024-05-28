@@ -30,20 +30,16 @@ end
 def create_owned_chatrooms
   ACCOUNTS_INFO.each do |owner|
     account = ScanChat::Account.first(username: owner['username'])
-    # CHATROOM_INFO.each do |chatroom|
-
     chatr_data = CHATROOM_INFO.select { |chatr| chatr['owner_username'] == owner['username'] }
 
-    chatr_data.each{|chatroom|
+    chatr_data.each do |chatroom|
       new_chatroom = ScanChat::CreateChatroomForOwner.call(
         owner_id: account.id, name: chatroom['name'], is_private: chatroom['is_private']
       )
       new_chatroom.description = chatroom['description']
       new_chatroom.save
-    }
-
     end
-  # end
+  end
 end
 
 def create_owned_messageboards
@@ -60,14 +56,12 @@ def create_owned_messageboards
       new_messageboard.description = msgb['description']
       new_messageboard.save
     }
-
-    end
-  # end
+  end
 end
-# msgb_data = MESSAGEBOARD_INFO.select { |msgb| msgb['owner_username'] == owner['username'] }
+
 def add_messages
   MESSAGES_INFO.each do |message|
-    thread = ScanChat::Thread.all.find{|thread|  thread.name == message['thread_name']}
+    thread = ScanChat::Thread.all.find{ |thread|  thread.name == message['thread_name']}
     sender = ScanChat::Account.first(username: message['sender_username'])
     ScanChat::AddMessageToThread.call(thread_id: thread.id, content: message['content'], sender_id: sender.id)
   end

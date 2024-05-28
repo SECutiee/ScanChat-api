@@ -13,9 +13,7 @@ describe 'Test chatrooms Handling' do
     describe 'Getting list of chatrooms' do
       before do
         @account_data = DATA[:accounts][0]
-        account = ScanChat::Account.create(@account_data)
-        account.add_owned_chatroom(DATA[:chatrooms][0])
-        account.add_owned_chatroom(DATA[:chatrooms][1])
+        create_owned_chatrooms(DATA[:accounts], DATA[:chatrooms])
       end
 
       it 'HAPPY: should get list for authorized account' do

@@ -5,11 +5,9 @@ require_relative 'app'
 
 module ScanChat
   # Web controller for ScanChat API
-
   class Api < Roda
     route('accounts') do |r|
       @acc_route = "#{@api_root}/accounts"
-      # Api.logger.info "Received request " + r.path
       # POST api/v1/accounts
       r.is do
         r.post do
@@ -68,7 +66,6 @@ module ScanChat
               new_data = JSON.parse(r.body.read)
               # Api.logger.info "Received request to create chatroom: #{new_data}"
 
-              account = Account.first(username:) || raise('Account not found')
               account = Account.first(username:) || raise('Account not found')
 
               # Api.logger.info "Found account: #{account.username}"

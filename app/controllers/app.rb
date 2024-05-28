@@ -2,7 +2,7 @@
 
 require 'roda'
 require 'json'
-require_relative './helpers'
+require_relative 'helpers'
 
 module ScanChat
   # Web controller for ScanChat API

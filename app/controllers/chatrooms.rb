@@ -61,16 +61,33 @@ module ScanChat
         end
       end
 
-      # GET api/v1/chatrooms/
-      # TODO problem is that we only get chatrooms and not the attributes in threads
+      # TODO: problem is that we only get chatrooms and not the attributes in threads
       # maybe it doesn't matter since we will never use this function actually
+
+      # GET api/v1/chatrooms/
       r.get do
         account = Account.first(username: @auth_account['username'])
         chatrooms = account.chatrooms
         JSON.pretty_generate(data: chatrooms)
       rescue StandardError
-        Api.logger.error "UNKNOWN ERROR: #{e.message}"
-        r.halt 403, { message: 'Could not find any Chatrooms' }.to_json
+        r.halt 403, { message: 'Could not find any chatrooms' }.to_json
+      end
+
+      # POST api/v1/chatrooms
+      r.post do
+        new_data = JSON.parse(routing.body.read)
+        new_chatr = Chatroom.new(new_data)
+        raise('Could not save chatroom') unless new_chatr.save
+
+        response.status = 201
+        response['Location'] = "#{@chatr_route}/#{new_chatr.id}"
+        { message: 'Chatroom saved', data: new_chatr }.to_json
+      rescue Sequel::MassAssignmentRestriction
+        Api.logger.warn "MASS-ASSIGNMENT: #{new_data.keys}"
+        r.halt 400, { message: 'Illegal Attributes' }.to_json
+      rescue StandardError => e
+        Api.logger.error "UNKOWN ERROR: #{e.message}"
+        r.halt 500, { message: 'Unknown server error' }.to_json
       end
     end
   end

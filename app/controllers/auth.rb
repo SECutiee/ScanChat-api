@@ -6,7 +6,7 @@ require_relative 'app'
 module ScanChat
   # Web controller for ScanChat API
   class Api < Roda
-    route('auth') do |r|
+    route('auth') do |routing|
       routing.on 'register' do
         # POST api/v1/auth/register
         routing.post do
@@ -26,14 +26,15 @@ module ScanChat
         end
       end
 
-      r.is 'authenticate' do
+      routing.is 'authenticate' do
         # POST /api/v1/auth/authenticate
-        r.post do
-          credentials = JSON.parse(request.body.read, symbolize_names: true)
+        routing.post do
+          credentials = JsonRequestBody.parse_symbolize(request.body.read)
           auth_account = AuthenticateAccount.call(credentials)
           auth_account.to_json
-        rescue AuthenticateAccount::UnauthorizedError
-          r.halt '403', { message: 'Invalid credentials' }.to_json
+        rescue AuthenticateAccount::UnauthorizedError => e
+          puts [e.class, e.message].join ': '
+          routing.halt '403', { message: 'Invalid credentials' }.to_json
         end
       end
     end
