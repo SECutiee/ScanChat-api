@@ -131,6 +131,7 @@ describe 'Test messageboards Handling' do
 
     it 'SECURITY: should prevent basic SQL injection targeting IDs' do
       delete 'api/v1/messageboards/2%20or%20id%3E0'
+    end
 
     #   # deliberately not reporting error -- don't give attacker information
     #   _(last_response.status).must_equal 404

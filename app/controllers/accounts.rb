@@ -114,7 +114,7 @@ module ScanChat
               threads = ScanChat::Thread.where(owner_id: account.id, thread_type: 'messageboard').all
 
               # Collect all messageboards belonging to the threads, filtering out nil values
-              messageboards = threads.filter_map(&:messageboard) || raise('no messageboards found for this account not found')
+              messageboards = threads.filter_map(&:messageboard) || raise('no messageboards found for this account')
 
               output = { data: messageboards }
               JSON.pretty_generate(output)
@@ -128,7 +128,6 @@ module ScanChat
               new_data = JSON.parse(r.body.read)
               # Api.logger.info "Received request to create messageboard: #{new_data}"
 
-              account = Account.first(username:) || raise('Account not found')
               account = Account.first(username:) || raise('Account not found')
 
               # Api.logger.info "Found account: #{account.username}"

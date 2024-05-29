@@ -71,7 +71,6 @@ def add_members_to_chatrooms(member_data)
   member_data.each do |member_chatroom|
     member_chatroom['username'].each do |username|
       chatr_id = ScanChat::Chatroom.all.find { |chatroom| chatroom.name == member_chatroom['chatroom_name'] }.id
-      chatr_id = ScanChat::Chatroom.all.find { |chatroom| chatroom.name == member_chatroom['chatroom_name'] }.id
       ScanChat::AddMemberToChatroom.call(username:, chatroom_id: chatr_id)
     end
   end
