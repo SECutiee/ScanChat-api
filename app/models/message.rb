@@ -10,6 +10,7 @@ module ScanChat
   # Represents a message of a thread
   class Message < Sequel::Model
     many_to_one :thread
+    many_to_one :sender, class: :'ScanChat::Account'
 
     plugin :timestamps
     plugin :whitelist_security
@@ -34,7 +35,8 @@ module ScanChat
           attributes: {
             id:,
             content:,
-            sender_id:
+            sender_username: sender.username,
+            sender_nickname: sender.nickname
           },
           include: {
             thread:

@@ -62,7 +62,7 @@ namespace :db do
   desc 'Run migrations'
   task :migrate =>  [:load, :print_env] do
     puts 'Migrating database to latest'
-    Sequel::Migrator.run(app.DB, 'app/db/migrations')
+    Sequel::Migrator.run(@app.DB, 'app/db/migrations')
   end
 
   desc 'Delete database'

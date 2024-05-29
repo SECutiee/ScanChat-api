@@ -29,7 +29,7 @@ module ScanChat
       routing.is 'authenticate' do
         # POST /api/v1/auth/authenticate
         routing.post do
-          credentials = JsonRequestBody.parse_symbolize(request.body.read)
+          credentials = JSON.parse(request.body.read, symbolize_names: true)
           auth_account = AuthenticateAccount.call(credentials)
           auth_account.to_json
         rescue AuthenticateAccount::UnauthorizedError => e

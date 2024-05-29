@@ -23,8 +23,11 @@ module ScanChat
 
           # GET api/v1/chatrooms/[thread_id]/messages
           r.get do
+            Api.logger.info "Thread ID: #{thread_id}"
             output = { data: Thread.first(id: thread_id).messages }
-            JSON.pretty_generate(output)
+            response = JSON.pretty_generate(output)
+            Api.logger.info "Messages: #{response}"
+            response
           rescue StandardError
             r.halt 404, { message: 'Could not find messages' }.to_json
           end
@@ -60,9 +63,6 @@ module ScanChat
           r.halt 404, { message: e.message }.to_json
         end
       end
-
-      # TODO: problem is that we only get chatrooms and not the attributes in threads
-      # maybe it doesn't matter since we will never use this function actually
 
       # GET api/v1/chatrooms/
       r.get do
