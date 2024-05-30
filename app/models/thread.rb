@@ -71,8 +71,9 @@ module ScanChat
           attributes: {
             id:,
             name:,
-            owner_id:,
+            owner:,
             description:,
+            messages:,
             expiration_date:
           }
         }, options

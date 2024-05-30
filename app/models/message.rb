@@ -36,11 +36,12 @@ module ScanChat
             id:,
             content:,
             sender_username: sender.username,
-            sender_nickname: sender.nickname
-          },
-          include: {
-            thread:
+            sender_nickname: sender.nickname,
+            sender_id: sender.id
           }
+          # include: {
+          #   thread:
+          # }
         }, options
       )
     end
