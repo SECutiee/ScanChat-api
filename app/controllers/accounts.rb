@@ -6,45 +6,59 @@ require_relative 'app'
 module ScanChat
   # Web controller for ScanChat API
   class Api < Roda
-    route('accounts') do |r|
-      @acc_route = "#{@api_root}/accounts"
-      # POST api/v1/accounts
-      r.is do
-        r.post do
-          new_data = JSON.parse(r.body.read)
-          new_account = Account.new(new_data)
-          raise 'Could not save account' unless new_account.save
+    route('accounts') do |routing|
+      @account_route = "#{@api_root}/accounts"
 
-          response.status = 201
-          response['Location'] = "#{@acc_route}/#{new_account[:username]}"
-          { message: 'Account created', data: new_account }.to_json
-        rescue Sequel::MassAssignmentRestriction
-          Api.logger.warn "MASS-ASSIGNMENT: #{new_data.keys}"
-          r.halt 400, { message: 'Illegal Attributes' }.to_json
+      routing.on String do |username|
+        # GET api/v1/accounts/[username]
+        routing.get do
+          account = GetAccountQuery.call(
+            requestor: @auth_account, username: username
+          )
+          account.to_json
+        rescue GetAccountQuery::ForbiddenError => e
+          routing.halt 404, { message: e.message }.to_json
         rescue StandardError => e
-          Api.logger.error 'Unknown error saving account'
-          r.halt 500, { message: e.message }.to_json
+          puts "GET ACCOUNT ERROR: #{e.inspect}"
+          routing.halt 500, { message: 'API Server Error' }.to_json
         end
       end
 
-      r.on String do |username|
-        r.is do
+      # POST api/v1/accounts
+      routing.post do
+        new_data = JSON.parse(routing.body.read)
+        new_account = Account.new(new_data)
+        raise('Could not save account') unless new_account.save
+
+        response.status = 201
+        response['Location'] = "#{@account_route}/#{new_account[:username]}"
+        { message: 'Account created', data: new_account }.to_json
+      rescue Sequel::MassAssignmentRestriction
+        Api.logger.warn "MASS-ASSIGNMENT: #{new_data.keys}"
+        routing.halt 400, { message: 'Illegal Attributes' }.to_json
+      rescue StandardError => e
+        Api.logger.error 'Unknown error saving account'
+        routing.halt 500, { message: e.message }.to_json
+      end
+
+      routing.on String do |username|
+        routing.is do
           # GET api/v1/accounts/[username]
-          r.get do
+          routing.get do
             account = Account.first(username:)
             account ? account.to_json : raise('Account not found')
           rescue StandardError => e
             Api.logger.error "UNKNOWN ERROR: #{e.message}"
-            r.halt 404, { message: e.message }.to_json
+            routing.halt 404, { message: e.message }.to_json
           end
         end
 
-        r.on 'chatrooms' do
-          @acc_chatrooms_route = "#{@acc_route}/#{username}/chatrooms"
+        routing.on 'chatrooms' do
+          @acc_chatrooms_route = "#{@account_route}/#{username}/chatrooms"
 
           # GET api/v1/accounts/[username]/chatrooms
-          r.is do
-            r.get do
+          routing.is do
+            routing.get do
               account = ScanChat::Account.first(username:) || raise('Account not found')
 
               # Fetch all threads belonging to the account
@@ -58,12 +72,12 @@ module ScanChat
               JSON.pretty_generate(output)
             rescue StandardError => e
               Api.logger.error "UNKNOWN ERROR: #{e.message}"
-              r.halt 404, { message: e.message }.to_json
+              routing.halt 404, { message: e.message }.to_json
             end
 
             # POST api/v1/accounts/[username]/chatrooms
-            r.post do
-              new_data = JSON.parse(r.body.read)
+            routing.post do
+              new_data = JSON.parse(routing.body.read)
               # Api.logger.info "Received request to create chatroom: #{new_data}"
 
               account = Account.first(username:) || raise('Account not found')
@@ -90,23 +104,23 @@ module ScanChat
 
               response.status = 201
               response['Location'] = "#{@acc_chatrooms_route}/#{new_chatroom.thread_id}"
-              r.halt 201, { message: 'Chatroom created', data: new_chatroom }.to_json
+              routing.halt 201, { message: 'Chatroom created', data: new_chatroom }.to_json
               rescue Sequel::MassAssignmentRestriction
                 Api.logger.warn "MASS-ASSIGNMENT: #{new_data.keys}"
-                r.halt 400, { message: 'Illegal Attributes' }.to_json
+                routing.halt 400, { message: 'Illegal Attributes' }.to_json
               rescue StandardError => e
                 Api.logger.error "UNKNOWN ERROR: #{e.message}"
-                r.halt 500, { message: 'Unknown server error' }.to_json
+                routing.halt 500, { message: 'Unknown server error' }.to_json
             end
           end
         end
 
-        r.on 'messageboards' do
-          @acc_messageboards_route = "#{@acc_route}/#{username}/messageboards"
+        routing.on 'messageboards' do
+          @acc_messageboards_route = "#{@account_route}/#{username}/messageboards"
 
           # GET api/v1/accounts/[username]/messageboards
-          r.is do
-            r.get do
+          routing.is do
+            routing.get do
               account = ScanChat::Account.first(username:) || raise('Account not found')
 
               # Fetch all threads belonging to the account
@@ -120,12 +134,12 @@ module ScanChat
               JSON.pretty_generate(output)
             rescue StandardError => e
               Api.logger.error "UNKNOWN ERROR: #{e.message}"
-              r.halt 404, { message: e.message }.to_json
+              routing.halt 404, { message: e.message }.to_json
             end
 
             # POST api/v1/accounts/[username]/messageboards
-            r.post do
-              new_data = JSON.parse(r.body.read)
+            routing.post do
+              new_data = JSON.parse(routing.body.read)
               # Api.logger.info "Received request to create messageboard: #{new_data}"
 
               account = Account.first(username:) || raise('Account not found')
@@ -152,19 +166,19 @@ module ScanChat
 
               response.status = 201
               response['Location'] = "#{@acc_messageboards_route}/#{new_messageboard.thread_id}"
-              r.halt 201, { message: 'Messageboard created', data: new_messageboard }.to_json
+              routing.halt 201, { message: 'Messageboard created', data: new_messageboard }.to_json
               rescue Sequel::MassAssignmentRestriction
                 Api.logger.warn "MASS-ASSIGNMENT: #{new_data.keys}"
-                r.halt 400, { message: 'Illegal Attributes' }.to_json
+                routing.halt 400, { message: 'Illegal Attributes' }.to_json
               rescue StandardError => e
                 Api.logger.error "UNKNOWN ERROR: #{e.message}"
-                r.halt 500, { message: 'Unknown server error' }.to_json
+                routing.halt 500, { message: 'Unknown server error' }.to_json
             end
           end
         end
 
-        r.is 'joined_chatrooms' do
-          r.get do
+        routing.is 'joined_chatrooms' do
+          routing.get do
             account = ScanChat::Account.first(username:) || raise('Account not found')
 
             # Collect all chatrooms belonging to the threads, filtering out nil values
@@ -174,7 +188,7 @@ module ScanChat
             JSON.pretty_generate(output)
           rescue StandardError => e
             Api.logger.error "UNKNOWN ERROR: #{e.message}"
-            r.halt 404, { message: e.message }.to_json
+            routing.halt 404, { message: e.message }.to_json
           end
         end
       end

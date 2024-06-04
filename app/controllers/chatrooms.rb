@@ -1,40 +1,42 @@
 # frozen_string_literal: true
 
-require 'roda'
 require_relative 'app'
 
 module ScanChat
   # Web controller for ScanChat API
   class Api < Roda
-    route('chatrooms') do |r|
+    route('chatrooms') do |routing|
+      unauthorized_message = { message: 'Unauthorized Request' }.to_json
+      routing.halt(403, unauthorized_message) unless @auth_account
+
       @chatroom_route = "#{@api_root}/chatrooms"
 
-      r.on String do |thread_id|
-        r.on 'messages' do
+      routing.on String do |thread_id|
+        routing.on 'messages' do
           @mes_route = "#{@api_root}/chatrooms/#{thread_id}/messages"
 
           # GET api/v1/chatrooms/[thread_id]/messages/[mes_id]
-          r.get String do |mes_id|
+          routing.get String do |mes_id|
             mes = Message.where(thread_id:, id: mes_id).first
             mes ? mes.to_json : raise('Message not found')
           rescue StandardError => e
-            r.halt 404, { message: e.message }.to_json
+            routing.halt 404, { message: e.message }.to_json
           end
 
           # GET api/v1/chatrooms/[thread_id]/messages
-          r.get do
+          routing.get do
             Api.logger.info "Thread ID: #{thread_id}"
             output = { data: Thread.first(id: thread_id).messages }
             response = JSON.pretty_generate(output)
             Api.logger.info "Messages: #{response}"
             response
           rescue StandardError
-            r.halt 404, { message: 'Could not find messages' }.to_json
+            routing.halt 404, { message: 'Could not find messages' }.to_json
           end
 
           # POST api/v1/chatrooms/[thread_id]/messages
-          r.post do
-            new_data = JSON.parse(r.body.read)
+          routing.post do
+            new_data = JSON.parse(routing.body.read)
             thread = Thread.first(id: thread_id)
             new_mes = thread.add_message(new_data)
             raise 'Could not create Message' unless new_mes
@@ -44,15 +46,15 @@ module ScanChat
             { message: 'Message sended', data: new_mes }.to_json
           rescue Sequel::MassAssignmentRestriction
             Api.logger.warn "MASS-ASSIGNMENT: #{new_data.keys}"
-            r.halt 400, { message: 'Illegal Attributes' }.to_json
+            routing.halt 400, { message: 'Illegal Attributes' }.to_json
           rescue StandardError => e
             Api.logger.error "UNKNOWN ERROR: #{e.message}"
-            r.halt 500, { message: e.message }.to_json
+            routing.halt 500, { message: e.message }.to_json
           end
         end
 
         # GET api/v1/chatrooms/[thread_id]
-        r.get do
+        routing.get do
           chatroom = Chatroom.first(thread_id:)
           raise 'Chatroom not found' unless chatroom
 
@@ -60,21 +62,21 @@ module ScanChat
           JSON.pretty_generate(output)
         rescue StandardError => e
           Api.logger.error "UNKNOWN ERROR: #{e.message}"
-          r.halt 404, { message: e.message }.to_json
+          routing.halt 404, { message: e.message }.to_json
         end
       end
 
       # GET api/v1/chatrooms/
-      r.get do
+      routing.get do
         account = Account.first(username: @auth_account['username'])
         chatrooms = account.chatrooms
         JSON.pretty_generate(data: chatrooms)
       rescue StandardError
-        r.halt 403, { message: 'Could not find any chatrooms' }.to_json
+        routing.halt 403, { message: 'Could not find any chatrooms' }.to_json
       end
 
       # POST api/v1/chatrooms
-      r.post do
+      routing.post do
         new_data = JSON.parse(routing.body.read)
         new_chatr = Chatroom.new(new_data)
         raise('Could not save chatroom') unless new_chatr.save
@@ -84,10 +86,10 @@ module ScanChat
         { message: 'Chatroom saved', data: new_chatr }.to_json
       rescue Sequel::MassAssignmentRestriction
         Api.logger.warn "MASS-ASSIGNMENT: #{new_data.keys}"
-        r.halt 400, { message: 'Illegal Attributes' }.to_json
+        routing.halt 400, { message: 'Illegal Attributes' }.to_json
       rescue StandardError => e
         Api.logger.error "UNKOWN ERROR: #{e.message}"
-        r.halt 500, { message: 'Unknown server error' }.to_json
+        routing.halt 500, { message: 'Unknown server error' }.to_json
       end
     end
   end

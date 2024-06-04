@@ -17,7 +17,7 @@ module ScanChat
 
     def from_email = ENV.fetch('SENDGRID_FROM_EMAIL')
     def mail_api_key = ENV.fetch('SENDGRID_API_KEY')
-    def mail_url = 'https://api.sendgrid.com/v3/mail/send'
+    def mail_url = ENV.fetch('SENDGRID_API_URL')
 
     def call
       raise(InvalidRegistration, 'Username exists') unless username_available?
