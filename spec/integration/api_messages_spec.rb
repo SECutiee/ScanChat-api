@@ -1,92 +1,124 @@
-# # frozen_string_literal: true
+# frozen_string_literal: true
 
-# require_relative '../spec_helper'
+require_relative '../spec_helper'
 
-# describe 'Test Message Handling' do
-#   include Rack::Test::Methods
+describe 'Test Message Handling' do
+  include Rack::Test::Methods
 
-#   before do
-#     wipe_database
+  before do
+    wipe_database
 
-#     DATA[:threads].each do |thread_data| ###
-#       ScanChat::Thread.create(thread_data) ###
-#     end
-#   end
+    @account_data = DATA[:accounts][0]
+    @wrong_account_data = DATA[:accounts][1]
 
-# #   it 'HAPPY: should be able to get a list of all messages' do
-# #     thre = ScanChat::Thread.first ###
-# #     DATA[:messages].each do |message_data| ###
-# #       thre.add_message(message_data) ###
-# #     end
+    @account = ScanChat::Account.create(@account_data)
+    @account.add_owned_chatroom(DATA[:chatrooms][0])
+    @account.add_owned_chatroom(DATA[:chatrooms][1])
+    ScanChat::Account.create(@wrong_account_data)
 
-# #     get "api/v1/chatrooms/#{thre.id}/messages" ### ask chatr.id
-# #     _(last_response.status).must_equal 200
+    header 'CONTENT_TYPE', 'application/json'
+  end
 
-# #     get "api/v1/messageboards/#{thre.id}/messages" ### new add
-# #     _(last_response.status).must_equal 200
+  describe 'Getting a single message' do
+    it 'HAPPY: should be able to get details of a single message' do
+      msg_data = DATA[:chatrooms][0]
+      chatr = @account.chatrooms.first
+      msg = chatr.add_message(msg_data)
 
-#     result = JSON.parse last_response.body
-#     _(result['data'].count).must_equal DATA[:messages].count
-#   end
+      header 'AUTHORIZATION', auth_header(@account_data)
+      get "/api/v1/chatrooms/#{msg.id}"
+      _(last_response.status).must_equal 200
 
-#   it 'HAPPY: should be able to get details of a single message' do
-#     mes_data = DATA[:messages][0]
-#     thre = ScanChat::Thread.first ###
+      result = JSON.parse(last_response.body)['data']
+      _(result['attributes']['id']).must_equal msg.id
+      _(result['attributes']['content']).must_equal msg_data['content']
+    end
 
-#     message = thre.add_message(mes_data) ###
+    it 'SAD AUTHORIZATION: should not get details without authorization' do
+      msg_data = DATA[:chatrooms][1]
+      chatr = ScanChat::Chatroom.first
+      msg = chatr.add_message(msg_data)
 
-#     get "api/v1/chatrooms/#{thre.id}/messages/#{message.id}"
-#     _(last_response.status).must_equal 200
+      get "/api/v1/chatrooms/#{msg.id}"
 
-#     get "api/v1/messageboards/#{thre.id}/messages/#{message.id}" ### new add
-#     _(last_response.status).must_equal 200
+      result = JSON.parse last_response.body
 
-#     result = JSON.parse last_response.body
-#     _(result['data']['attributes']['id']).must_equal message.id
-#     _(result['data']['attributes']['content']).must_equal mes_data['content']
-#     _(result['data']['attributes']['sender_id']).must_equal mes_data['sender_id']
-#   end
+      _(last_response.status).must_equal 403
+      _(result['attributes']).must_be_nil
+    end
 
-#   it 'SAD: should return error if unknown message requested' do
-#     thre = ScanChat::Thread.first
-#     get "/api/v1/chatrooms/#{thre.id}/messages/foobar" ###
-#     get "/api/v1/messageboards/#{thre.id}/messages/foobar" ### new add
+    it 'BAD AUTHORIZATION: should not get details with wrong authorization' do
+      msg_data = DATA[:chatrooms][0]
+      chatr = @account.chatrooms.first
+      msg = chatr.add_message(msg_data)
 
-#     _(last_response.status).must_equal 404
-#   end
+      header 'AUTHORIZATION', auth_header(@wrong_account_data)
+      get "/api/v1/chatrooms/#{msg.id}"
 
-#   describe 'Creating New Messages' do
-#     before do
-#       @thre = ScanChat::Thread.first ###
-#       @mes_data = DATA[:messages][1]
-#       @req_header = { 'CONTENT_TYPE' => 'application/json' }
-#     end
+      result = JSON.parse last_response.body
 
-#     it 'HAPPY: should be able to create a new message' do
-#       post "/api/v1/chatrooms/#{@thre.id}/messages", @mes_data.to_json, @req_header
-#       post "/api/v1/messageboards/#{@thre.id}/messages", @mes_data.to_json, @req_header ### new add
-#       _(last_response.status).must_equal 201
-#       _(last_response.headers['Location'].size).must_be :>, 0
+      _(last_response.status).must_equal 403
+      _(result['attributes']).must_be_nil
+    end
 
-#       created = JSON.parse(last_response.body)['data']['data']['attributes']
-#       mes = ScanChat::Message.order(Sequel.desc(:created_at)).first
+    it 'SAD: should return error if message does not exist' do
+      header 'AUTHORIZATION', auth_header(@account_data)
+      get '/api/v1/chatrooms/foobar'
 
-#       _(created['id']).must_equal mes.id
-#       _(created['content']).must_equal @mes_data['content']
-#       _(created['sender_id']).must_equal @mes_data['sender_id']
-#     end
+      _(last_response.status).must_equal 404
+    end
+  end
 
-#     it 'SECURITY: should not create messages with mass assignment' do
-#       bad_data = @mes_data.clone
-#       bad_data['created_at'] = '1900-01-01'
-#       post "api/v1/chatrooms/#{@thre.id}/messages",
-#            bad_data.to_json, @req_header
+  describe 'Creating Messages' do
+    before do
+      @chatr = ScanChat::Chatroom.first
+      @msg_data = DATA[:chatrooms][1]
+    end
 
-#       post "api/v1/messageboards/#{@thre.id}/messages", ###
-#            bad_data.to_json, @req_header
+    it 'HAPPY: should be able to create when everything correct' do
+      header 'AUTHORIZATION', auth_header(@account_data)
+      post "api/v1/chatrooms/#{@chatr.id}/chatrooms", @msg_data.to_json
+      _(last_response.status).must_equal 201
+      _(last_response.headers['Location'].size).must_be :>, 0
 
-#       _(last_response.status).must_equal 400
-#       _(last_response.headers['Location']).must_be_nil
-#     end
-#   end
-# end
+      created = JSON.parse(last_response.body)['data']['attributes']
+      msg = ScanChat::Chatroom.first
+
+      _(created['id']).must_equal msg.id
+      _(created['content']).must_equal @msg_data['content']
+    end
+
+    it 'BAD AUTHORIZATION: should not create with incorrect authorization' do
+      header 'AUTHORIZATION', auth_header(@wrong_account_data)
+      post "api/v1/chatrooms/#{@chatr.id}/chatrooms", @msg_data.to_json
+
+      data = JSON.parse(last_response.body)['data']
+
+      _(last_response.status).must_equal 403
+      _(last_response.headers['Location']).must_be_nil
+      _(data).must_be_nil
+    end
+
+    it 'SAD AUTHORIZATION: should not create without any authorization' do
+      post "api/v1/chatrooms/#{@chatr.id}/chatrooms", @msg_data.to_json
+
+      data = JSON.parse(last_response.body)['data']
+
+      _(last_response.status).must_equal 403
+      _(last_response.headers['Location']).must_be_nil
+      _(data).must_be_nil
+    end
+
+    it 'BAD VULNERABILITY: should not create with mass assignment' do
+      bad_data = @msg_data.clone
+      bad_data['created_at'] = '1900-01-01'
+      header 'AUTHORIZATION', auth_header(@account_data)
+      post "api/v1/chatrooms/#{@chatr.id}/chatrooms", bad_data.to_json
+
+      data = JSON.parse(last_response.body)['data']
+      _(last_response.status).must_equal 400
+      _(last_response.headers['Location']).must_be_nil
+      _(data).must_be_nil
+    end
+  end
+end

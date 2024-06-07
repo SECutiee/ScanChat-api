@@ -42,6 +42,7 @@ module ScanChat
       end
 
       routing.on String do |username|
+        # TODO: fix this route(have the same route as the first one)
         routing.is do
           # GET api/v1/accounts/[username]
           routing.get do
