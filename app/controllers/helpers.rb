@@ -14,6 +14,7 @@ module ScanChat
       return nil unless headers['AUTHORIZATION']
 
       scheme, auth_token = headers['AUTHORIZATION'].split
+      return nil if auth_token.nil?
       return nil unless scheme.match?(/^Bearer$/i)
 
       account_payload = AuthToken.new(auth_token).payload
