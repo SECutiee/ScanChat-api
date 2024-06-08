@@ -2,7 +2,7 @@
 
 module ScanChat
   # Policy to determine if an account can view a particular project
-  # 檢查當前帳戶對某個項目的各種操作權限，根據帳戶是否是項目的擁有者或協作者來決定。
+  # Check the various operation permissions of the current account on a certain chatroom, depending on whether the account is the owner or members of the chatroom.
   class ChatroomPolicy
     def initialize(account, chatroom)
       @account = account
@@ -30,12 +30,12 @@ module ScanChat
       account_is_owner? || account_is_member?
     end
 
-    def can_remove_messages? #Wilmacheck: maybe don't remove messages? or can delete ?
+    def can_delete_messages?
       account_is_owner? || account_is_member?
     end
 
     def can_add_members?
-      account_is_owner? || account_is_member?
+      account_is_owner?
     end
 
     def can_remove_members?
@@ -53,7 +53,7 @@ module ScanChat
         can_delete: can_delete?,
         can_leave: can_leave?,
         can_add_messages: can_add_messages?,
-        can_delete_messages: can_remove_messages?,
+        can_delete_messages: can_delete_messages?,
         can_add_members: can_add_members?,
         can_remove_members: can_remove_members?,
         can_join: can_join?
@@ -67,7 +67,7 @@ module ScanChat
     end
 
     def account_is_member?
-      @chatroom.members.include?(@account) #Wilmacheck : .members
+      @chatroom.members.include?(@account)
     end
   end
 end

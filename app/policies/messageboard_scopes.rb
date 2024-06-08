@@ -23,12 +23,8 @@ module ScanChat
       private
 
       def left_messages_messageboards(account)
-        account.left_messages_messageboards # Wilmacheck
+        account.left_messages_messageboards
       end
-
-      # def leaves_messages?(messageboard, account)
-      #   messageboard.members.include? account
-      # end
     end
   end
 end

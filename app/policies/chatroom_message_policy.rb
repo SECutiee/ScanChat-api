@@ -30,15 +30,18 @@ class ChatroomMessagePolicy
 
   private
 
+  # the message should belongs to chatroom (not messageboard) and also the owner of message should = @account
   def account_owns_chatroom?
-    @message.thread.owner== @account
+    @message.thread.chatroom && @message.thread.chatroom.owner == @account
   end
 
-  def account_joins_in_chatroom? # Check if the account is a members on the chatroom the message belongs to.
-    @message.thread.chatroom.members.include?(@account) #Wilmacheck: .thread.chatroom.members
+  # Check if the account is a members on the chatroom the message belongs to.
+  def account_joins_in_chatroom?
+    @message.get_thread_members.include?(@account)
   end
 
+  # the message should belongs to chatroom (not messageboard) and also the sender of message should = @account
   def chatroommessage_belongs_to_account?
-    @message.sender == @account #Wilmacheck
+    @message.thread.chatroom && @message.sender == @account
   end
 end

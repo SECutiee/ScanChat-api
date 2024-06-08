@@ -32,7 +32,7 @@ module ScanChat
       owned_threads.select { |thread| thread.thread_type == 'messageboard' }.map(&:messageboard)
     end
 
-    def left_messages_messageboards # Wilmacheck
+    def left_messages_messageboards
       sent_messages.select { |message| message.thread.thread_type == 'messageboard' }.map(&:thread).map(&:messageboard)
     end
 

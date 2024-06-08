@@ -2,8 +2,8 @@
 
 module ScanChat
   # Policy to determine if account can view a project
-  # AccountScope 類用於確定某個帳戶可以查看的項目範圍。如果當前帳戶是目標帳戶本人，則可以查看目標帳戶的所有項目；
-  # 如果不是，則只能查看目標帳戶的項目中包含當前帳戶作為協作者的那些項目。
+  # The AccountScope class is used to determine the scope of chatrooms that an account can view. If the current account is the target account, you can view all items of the target account;
+  # If not, you can only view those chatrooms among the target account's chatrooms that have the current account as a members.
   class ChatroomPolicy
     # Scope of chatroom policies
     class AccountScope
@@ -27,7 +27,7 @@ module ScanChat
       private
 
       def all_chatrooms(account)
-        account.owned_chatrooms + account.joined_chatrooms # Wilmacheck: joined_chatrooms
+        account.owned_chatrooms + account.joined_chatrooms
       end
 
       def includes_member?(chatroom, account)

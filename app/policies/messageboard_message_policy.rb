@@ -8,10 +8,6 @@ class MessageboardMessagePolicy
     @message = message
   end
 
-  # def can_view?
-  #   account_owns_messageboard? || account_joins_in_messageboard?
-  # end
-
   def can_edit?
     messageboardmessage_belongs_to_account?
   end
@@ -22,7 +18,6 @@ class MessageboardMessagePolicy
 
   def summary
     {
-      # can_view: can_view?,
       can_edit: can_edit?,
       can_delete: can_delete?
     }
@@ -30,16 +25,9 @@ class MessageboardMessagePolicy
 
   private
 
-  # def account_owns_messageboard?
-  #   @message.thread.owner== @account
-  # end
-
-  # def account_joins_in_messageboard? # Check if the account is a members on the messageboard the message belongs to.
-  #   @message.thread.messageboard.members.include?(@account) #Wilmacheck: .thread.messageboard.members
-  # end
-
+  # the message should belongs to messageboard (not chatroom) and also the sender of message should = @account
   def messageboardmessage_belongs_to_account?
-    @message.sender == @account #Wilmacheck
+    @message.thread.messageboard && @message.sender == @account
   end
 
 end
