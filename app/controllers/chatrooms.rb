@@ -8,7 +8,6 @@ module ScanChat
     route('chatrooms') do |routing|
       unauthorized_message = { message: 'Unauthorized Request' }.to_json
       routing.halt(403, unauthorized_message) unless @auth_account
-
       @chatroom_route = "#{@api_root}/chatrooms"
 
       routing.on String do |thread_id|
@@ -68,8 +67,9 @@ module ScanChat
 
       # GET api/v1/chatrooms/
       routing.get do
-        account = Account.first(username: @auth_account['username'])
-        chatrooms = account.chatrooms
+        Api.logger.info "Chatrooms Auth Account: #{@auth_account.username}"
+        account = Account.first(username: @auth_account.username)
+        chatrooms = account.owned_chatrooms + account.joined_chatrooms
         JSON.pretty_generate(data: chatrooms)
       rescue StandardError
         routing.halt 403, { message: 'Could not find any chatrooms' }.to_json

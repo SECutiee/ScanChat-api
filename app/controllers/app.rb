@@ -23,9 +23,12 @@ module ScanChat
 
       begin
         @auth_account = authenticated_account(routing.headers)
+        Api.logger.info "Authenticated Account: #{@auth_account}"
       rescue AuthToken::InvalidTokenError
+        Api.logger.info 'Invalid Token'
         routing.halt 403, { message: 'Invalid auth token' }.to_json
       rescue AuthToken::ExpiredTokenError
+        Api.logger.info 'Expired Token'
         routing.halt 403, { message: 'Expired auth token' }.to_json
       end
 
