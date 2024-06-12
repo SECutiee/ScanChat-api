@@ -15,7 +15,7 @@ describe 'Test Account Handling' do
       # create_accounts(DATA[:accounts])
       # account = ScanChat::Account.first
       account_data = DATA[:accounts][0]
-      account = Credence::Account.create(account_data)
+      account = ScanChat::Account.create(account_data)
 
       header 'AUTHORIZATION', auth_header(account_data)
       get "/api/v1/accounts/#{account.username}"

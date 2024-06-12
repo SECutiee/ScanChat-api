@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Credence
+module ScanChat
   # check if account is allowed to see chatroom details
   class GetChatroomQuery
     # Error for not allowed to access chatroom

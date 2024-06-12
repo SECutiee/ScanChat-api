@@ -12,7 +12,6 @@ module ScanChat
       routing.halt(403, unauthorized_message) unless @auth_account
 
       @chatroom_route = "#{@api_root}/messageboards"
-
       routing.on String do |thread_id|
         @req_messageboard = Messageboard.first(id: msgb_id)
 
@@ -88,29 +87,29 @@ module ScanChat
 
       # TODO: problem is that we only get msgb and not the attributes in threads
       # GET api/v1/messageboards
-      routing.get do
-        account = Account.first(username: @auth_account['username'])
-        messageboards = account.messageboards
-        JSON.pretty_generate(data: messageboards)
-      rescue StandardError
-        routing.halt 403, { message: 'Could not find any messageboards' }.to_json
-      end
+      routing.is do
+        routing.get do
+          messageboards = MessageboardPolicy::AccountScope.new(@auth_account).viewable
+          JSON.pretty_generate(data: messageboards)
+        rescue StandardError
+          routing.halt 403, { message: 'Could not find any messageboards' }.to_json
+        end
 
-      # POST api/v1/messageboards
-      routing.post do
-        new_data = JSON.parse(routing.body.read)
-        new_msgb = Messageboard.new(new_data)
-        raise('Could not save messageboard') unless new_msgb.save
+        # POST api/v1/messageboards
+        routing.post do
+          new_data = JSON.parse(routing.body.read)
+          new_msgb = @auth_account.add_owned_messageboard(new_data)
 
-        response.status = 201
-        response['Location'] = "#{@msgb_route}/#{new_msgb.id}"
-        { message: 'Messageboard saved', data: new_msgb }.to_json
-      rescue Sequel::MassAssignmentRestriction
-        Api.logger.warn "MASS-ASSIGNMENT: #{new_data.keys}"
-        routing.halt 400, { message: 'Illegal Attributes' }.to_json
-      rescue StandardError => e
-        Api.logger.error "UNKOWN ERROR: #{e.message}"
-        routing.halt 500, { message: 'Unknown server error' }.to_json
+          response.status = 201
+          response['Location'] = "#{@msgb_route}/#{new_msgb.id}"
+          { message: 'Messageboard saved', data: new_msgb }.to_json
+        rescue Sequel::MassAssignmentRestriction
+          Api.logger.warn "MASS-ASSIGNMENT: #{new_data.keys}"
+          routing.halt 400, { message: 'Illegal Attributes' }.to_json
+        rescue StandardError => e
+          Api.logger.error "UNKOWN ERROR: #{e.message}"
+          routing.halt 500, { message: 'Unknown server error' }.to_json
+        end
       end
     end
   end
