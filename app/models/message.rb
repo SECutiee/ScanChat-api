@@ -27,6 +27,16 @@ module ScanChat
       self.content_secure = SecureDB.encrypt(plaintext)
     end
 
+    def get_thread_members # Wilmacheck: there must be a more clever way to write it
+      if thread.chatroom
+        thread.chatroom.members
+      elsif thread.messageboard
+        thread.messageboard.members
+      else
+        []
+      end
+    end
+
     # rubocop:disable Metrics/MethodLength
     def to_json(options = {})
       JSON(

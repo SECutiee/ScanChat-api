@@ -16,6 +16,15 @@ def wipe_database
   ScanChat::Account.map(&:destroy)
 end
 
+def auth_header(account_data)
+  auth = ScanChat::AuthenticateAccount.call(
+    username: account_data['username'],
+    password: account_data['password']
+  )
+
+  "Bearer #{auth[:attributes][:auth_token]}"
+end
+
 DATA = {
   accounts: YAML.safe_load_file('app/db/seeds/accounts_seed.yml'),
   threads: YAML.safe_load_file('app/db/seeds/threads_seed.yml'),

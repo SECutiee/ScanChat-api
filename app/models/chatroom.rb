@@ -79,20 +79,30 @@ module ScanChat
     end
 
     # rubocop:disable Metrics/MethodLength
-    def to_json(options = {})
-      JSON(
-        {
-          type: 'chatroom',
-          attributes: {
-            id:,
-            members:,
-            is_private:,
-            thread_id:,
-            thread:
-          }
-        }, options
+    def to_h
+      {
+        type: 'chatroom',
+        attributes: {
+          id:,
+          is_private:,
+          thread_id:,
+          thread:
+        }
+      }
+    end
+
+    def full_details
+      to_h.merge(
+        relationships: {
+          owner:,
+          members:,
+          messages:
+        }
       )
     end
-    # rubocop:enable Metrics/MethodLength
+
+    def to_json(options = {})
+      JSON(to_h, options)
+    end
   end
 end

@@ -7,20 +7,28 @@ describe 'Test chatrooms Handling' do
 
   before do
     wipe_database
+
+    @account_data = DATA[:accounts][0]
+    @wrong_account_data = DATA[:accounts][1]
+
+    @account = ScanChat::Account.create(@account_data)
+    @wrong_account = ScanChat::Account.create(@wrong_account_data)
+
+    header 'CONTENT_TYPE', 'application/json'
   end
 
   describe 'Getting chatrooms' do
     describe 'Getting list of chatrooms' do
       before do
-        @account_data = DATA[:accounts][0]
-        create_owned_chatrooms(DATA[:accounts], DATA[:chatrooms])
+        @account.create_owned_chatrooms(DATA[:chatrooms][0])
+        @account.create_owned_chatrooms(DATA[:chatrooms][1])
+
+        # @account_data = DATA[:accounts][0]
+        # create_owned_chatrooms(DATA[:accounts], DATA[:chatrooms])
       end
 
       it 'HAPPY: should get list for authorized account' do
-        auth = ScanChat::AuthenticateAccount.call(
-          username: @account_data['username'],
-          password: @account_data['password']
-        )
+        header 'AUTHORIZATION', auth_header(@account_data)
 
         header 'AUTHORIZATION', "Bearer #{auth[:attributes][:auth_token]}"
         get 'api/v1/chatrooms'
@@ -30,8 +38,7 @@ describe 'Test chatrooms Handling' do
         _(result['data'].count).must_equal 2
       end
 
-      it 'BAD: should not process for unauthorized account' do
-        header 'AUTHORIZATION', 'Bearer bad_token'
+      it 'BAD: should not process without authorization' do
         get 'api/v1/chatrooms'
         _(last_response.status).must_equal 403
 
@@ -79,32 +86,46 @@ describe 'Test chatrooms Handling' do
     end
 
     it 'HAPPY: should be able to get details of a single chatroom' do
-      create_accounts(DATA[:accounts])
-      create_owned_chatrooms(DATA[:accounts], DATA[:chatrooms])
+      thread = @account.add_owned_chatroom(DATA[:chatrooms][0])
 
-      thread = ScanChat::Thread.order(Sequel.desc(:created_at)).first
-      thread_id = thread.id
-
-      get "/api/v1/chatrooms/#{thread_id}"
+      header 'AUTHORIZATION', auth_header(@account_data)
+      get "/api/v1/chatrooms/#{thread.id}"
       _(last_response.status).must_equal 200
 
-      result = JSON.parse last_response.body
-      _(result['attributes']['thread_id']).must_equal thread_id
-      _(result['attributes']['thread']['attributes']['name']).must_equal thread.name
+      result = JSON.parse(last_response.body)['data']
+      _(result['attributes']['thread_id']).must_equal thread.id
+      _(result['attributes']['thread']['name']).must_equal thread.name
+
+      create_accounts(DATA[:accounts])
+      create_owned_chatrooms(DATA[:accounts], DATA[:chatrooms])
     end
 
     it 'SAD: should return error if unknown chatroom requested' do
+      header 'AUTHORIZATION', auth_header(@account_data)
       get '/api/v1/chatrooms/foobar'
 
       _(last_response.status).must_equal 404
     end
 
-    it 'SECURITY: should prevent basic SQL injection targeting IDs' do
+    it 'BAD AUTHORIZATION: should not get chatroom with wrong authorization' do
+      chatr = @account.add_owned_chatroom(DATA[:chatrooms][0])
+
+      header 'AUTHORIZATION', auth_header(@wrong_account_data)
+      get "/api/v1/chatrooms/#{chatr.thread_id}"
+      _(last_response.status).must_equal 403
+
+      result = JSON.parse last_response.body
+      _(result['attributes']).must_be_nil
+    end
+
+    it 'BAD SQL VULNERABILTY: should prevent basic SQL injection of id' do
       create_accounts(DATA[:accounts])
       create_owned_chatrooms(DATA[:accounts], DATA[:chatrooms])
+
+      header 'AUTHORIZATION', auth_header(@account_data)
       get 'api/v1/chatrooms/2%20or%20id%3E0' ### TODO this doesn't make sense
 
-      # deliberately not reporting error -- don't give attacker information
+      # deliberately not reporting detection -- don't give attacker information
       _(last_response.status).must_equal 404
       _(last_response.body['data']).must_be_nil
     end
