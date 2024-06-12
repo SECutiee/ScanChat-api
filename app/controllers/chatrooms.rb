@@ -2,11 +2,9 @@
 
 require_relative 'app'
 
-# rubocop:disable Metrics/BlockLength
 module ScanChat
   # Web controller for ScanChat API
   class Api < Roda
-    # rubocop:disable Metrics/BlockLength
     route('chatrooms') do |routing|
       unauthorized_message = { message: 'Unauthorized Request' }.to_json
       routing.halt(403, unauthorized_message) unless @auth_account
@@ -14,7 +12,6 @@ module ScanChat
       @chatroom_route = "#{@api_root}/chatrooms"
       routing.on String do |chatr_id|
         @req_chatroom = Chatroom.first(thread_id: chatr_id)
-
         # GET api/v1/chatrooms/[ID]
         routing.get do
           chatroom = GetChatroomQuery.call(
@@ -119,7 +116,7 @@ module ScanChat
           routing.halt 500, { message: 'API server error' }.to_json
         end
       end
-      
+
       routing.on('members') do
         # PUT api/v1/chatroom/[chatr_id]/members
         routing.put do
@@ -156,7 +153,6 @@ module ScanChat
         end
       end
 
-      # TODO: problem is that we only get msgb and not the attributes in threads
       # GET api/v1/chatrooms
       routing.is do
         routing.get do
@@ -168,8 +164,11 @@ module ScanChat
 
         # POST api/v1/chatrooms
         routing.post do
-          new_data = JSON.parse(routing.body.read)
-          new_chatr = @auth_account.add_owned_chatroom(new_data)
+          # Api.logger.info('new_chatroom')
+          new_chatr = CreateChatroomForOwner.call(
+            account: @auth_account,
+            chatroom_data: JSON.parse(routing.body.read)
+          )
 
           response.status = 201
           response['Location'] = "#{@chatr_route}/#{new_chatr.id}"
