@@ -2,7 +2,7 @@
 
 module ScanChat
   # Add a member to another owner's existing chatroom
-  class AddMember
+  class AddMemberToChatroom
     # Error for owner cannot be member
     class ForbiddenError < StandardError
       def message
@@ -10,8 +10,8 @@ module ScanChat
       end
     end
 
-    def self.call(account:, chatroom:, member_email:)
-      invitee = Account.first(email: member_email)
+    def self.call(account:, chatroom:, member_username:)
+      invitee = Account.first(username: member_username)
       policy = ChatroomJoinRequestPolicy.new(chatroom, account, invitee)
       raise ForbiddenError unless policy.can_invite?
 

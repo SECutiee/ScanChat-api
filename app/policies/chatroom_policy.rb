@@ -10,40 +10,40 @@ module ScanChat
     end
 
     def can_view?
-      account_is_owner? || account_is_member?
+      account_is_owner? || (chatroom_is_not_expired? && account_is_member?)
     end
 
     # duplication is ok!
     def can_edit?
-      account_is_owner? || account_is_member?
+      chatroom_is_not_expired? && account_is_owner?
     end
 
     def can_delete?
-      account_is_owner?
+      chatroom_is_not_expired? && account_is_owner?
     end
 
     def can_leave?
-      account_is_member?
+      chatroom_is_not_expired? && account_is_member?
     end
 
     def can_add_messages?
-      account_is_owner? || account_is_member?
+      chatroom_is_not_expired? && (account_is_owner? || account_is_member?)
     end
 
     def can_delete_messages?
-      account_is_owner? || account_is_member?
+      chatroom_is_not_expired? && (account_is_owner? || account_is_member?)
     end
 
     def can_add_members?
-      account_is_owner?
+      chatroom_is_not_expired? && account_is_owner?
     end
 
     def can_remove_members?
-      account_is_owner?
+      chatroom_is_not_expired? && account_is_owner?
     end
 
     def can_join?
-      not (account_is_owner? or account_is_member?)
+      chatroom_is_not_expired? && !(account_is_owner? || account_is_member?)
     end
 
     def summary
@@ -68,6 +68,11 @@ module ScanChat
 
     def account_is_member?
       @chatroom.members.include?(@account)
+    end
+
+    def chatroom_is_not_expired?
+      Api.logger.info("chatroom_is_not_expired? #{@chatroom} #{@chatroom.expiration_date.nil? || @chatroom.expiration_date > Time.now}")
+      @chatroom.expiration_date.nil? || @chatroom.expiration_date > Time.now
     end
   end
 end

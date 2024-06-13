@@ -7,7 +7,7 @@ module ScanChat
   class ChatroomPolicy
     # Scope of chatroom policies
     class AccountScope
-      def initialize(current_account, target_account = nil)
+      def initialize(current_account)
         target_account ||= current_account
         @full_scope = all_chatrooms(target_account)
         @current_account = current_account
@@ -15,12 +15,8 @@ module ScanChat
       end
 
       def viewable
-        if @current_account == @target_account
-          @full_scope
-        else
-          @full_scope.select do |chatr|
-            includes_member?(chatr, @current_account)
-          end
+        @full_scope.select do |chatr|
+          owner?(chatr, @current_account) || not_expired?(chatr)
         end
       end
 
@@ -30,8 +26,17 @@ module ScanChat
         account.owned_chatrooms + account.joined_chatrooms
       end
 
-      def includes_member?(chatroom, account)
-        chatroom.members.include? account
+      # def includes_member?(chatroom, account)
+      #   chatroom.members.include?(account)
+      # end
+
+      def owner?(chatroom, account)
+        chatroom.owner == account
+      end
+
+      def not_expired?(chatroom)
+        Api.logger.info("chatroom_is_not_expired? #{chatroom} #{chatroom.expiration_date.nil? || chatroom.expiration_date > Time.now}")
+        chatroom.expiration_date.nil? || chatroom.expiration_date > Time.now
       end
     end
   end

@@ -10,10 +10,10 @@ module ScanChat
       end
     end
 
-    def self.call(req_username:, member_email:, chatroom_id:)
+    def self.call(req_username:, member_username:, chatroom_id:)
       account = Account.first(username: req_username)
-      chatroom = Chatroom.first(id: chatroom_id)
-      member = Account.first(email: member_email)
+      chatroom = Chatroom.first(thread_id: chatroom_id)
+      member = Account.first(username: member_username)
 
       policy = ChatroomJoinRequestPolicy.new(chatroom, account, member)
       raise ForbiddenError unless policy.can_remove?
