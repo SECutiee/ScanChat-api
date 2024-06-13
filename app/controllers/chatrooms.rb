@@ -12,7 +12,8 @@ module ScanChat
       @chatroom_route = "#{@api_root}/chatrooms"
       routing.on String do |chatr_id|
         @req_chatroom = Chatroom.first(thread_id: chatr_id)
-        # GET api/v1/chatrooms/[ID]
+
+        # GET api/v1/chatrooms/[chatr_id]
         routing.get do
           chatroom = GetChatroomQuery.call(
             account: @auth_account, chatroom: @req_chatroom
@@ -23,7 +24,7 @@ module ScanChat
         rescue GetChatroomQuery::NotFoundError => e
           routing.halt 404, { message: e.message }.to_json
         rescue StandardError => e
-          puts "FIND CHATROOM ERROR: #{e.inspect}"
+          Api.logger.error "FIND CHATROOM ERROR: #{e.inspect}"
           routing.halt 500, { message: 'API server error' }.to_json
         end
 
@@ -67,98 +68,86 @@ module ScanChat
           Api.logger.error "UNKNOWN ERROR: #{e.message}"
           routing.halt 404, { message: e.message }.to_json
         end
-      end
 
-      # DELETE api/v1/chatrooms/[thread_id]
-      routing.delete String do |thread_id|
-        thread = Thread.first(id: thread_id)
-        raise 'Chatroom not found' unless thread
+        # DELETE api/v1/chatrooms/[thread_id]
+        routing.is do
+          routing.delete String do |thread_id|
+            thread = Thread.first(id: thread_id)
+            raise 'Chatroom not found' unless thread
 
-        DeleteChatroomByThreadId(thread_id:)
-        { message: 'Chatroom deleted' }.to_json
-      rescue StandardError => e
-        Api.logger.error "UNKNOWN ERROR: #{e.message}"
-        routing.halt 404, { message: e.message }.to_json
-      end
-
-      routing.on('members') do
-        # PUT api/v1/chatroom/[chatr_id]/members
-        routing.put do
-          req_data = JSON.parse(routing.body.read)
-
-          member = AddMember.call(
-            account: @auth_account,
-            chatroom: @req_chatroom,
-            memb_email: req_data['email']
-          )
-
-          { data: member }.to_json
-        rescue AddMember::ForbiddenError => e
-          routing.halt 403, { message: e.message }.to_json
-        rescue StandardError
-          routing.halt 500, { message: 'API server error' }.to_json
+            DeleteChatroomByThreadId(thread_id:)
+            { message: 'Chatroom deleted' }.to_json
+          rescue StandardError => e
+            Api.logger.error "UNKNOWN ERROR: #{e.message}"
+            routing.halt 404, { message: e.message }.to_json
+          end
         end
 
-        # DELETE api/v1/chatroom/[chatr_id]/members
-        routing.delete do
-          req_data = JSON.parse(routing.body.read)
-          member = RemoveMember.call(
-            req_username: @auth_account.username,
-            memb_email: req_data['email'],
-            chatrroom_id: chatr_id
-          )
+        routing.on('edit') do
+          # PUT api/v1/chatrooms/[thread_id]/edit
+          routing.put do
+            Api.logger.info('edit_chatroom')
+            req_data = JSON.parse(routing.body.read)
+            edited_chatroom = EditChatroom.call(
+              account: @auth_account,
+              chatroom: @req_chatroom,
+              chatroom_data: req_data
+            )
 
-          { message: "#{member.username} removed from projet",
-            data: member }.to_json
-        rescue RemoveMember::ForbiddenError => e
-          routing.halt 403, { message: e.message }.to_json
-        rescue StandardError
-          routing.halt 500, { message: 'API server error' }.to_json
+            { data: edited_chatroom }.to_json
+          rescue EditChatroom::ForbiddenError => e
+            routing.halt 403, { message: e.message }.to_json
+          rescue StandardError
+            routing.halt 500, { message: 'API server error' }.to_json
+          end
+        end
+
+        routing.on('members') do
+          # PUT api/v1/chatroom/[chatr_id]/members
+          routing.put do
+            req_data = JSON.parse(routing.body.read)
+
+            member = AddMemberToChatroom.call(
+              account: @auth_account,
+              chatroom: @req_chatroom,
+              memb_username: req_data['username']
+            )
+
+            { data: member }.to_json
+          rescue AddMemberToChatroom::ForbiddenError => e
+            routing.halt 403, { message: e.message }.to_json
+          rescue StandardError
+            routing.halt 500, { message: 'API server error' }.to_json
+          end
+
+          # DELETE api/v1/chatroom/[chatr_id]/members
+          routing.delete do
+            req_data = JSON.parse(routing.body.read)
+            member = RemoveMemberFromChatroom.call(
+              req_username: @auth_account.username,
+              member_username: req_data['username'],
+              chatroom_id: chatr_id
+            )
+
+            { message: "#{member.username} removed from chatroom",
+              data: member }.to_json
+          rescue RemoveMemberFromChatroom::ForbiddenError => e
+            routing.halt 403, { message: e.message }.to_json
+          rescue StandardError => e
+            Api.logger.error "UNKNOWN ERROR: #{e.message}"
+            routing.halt 500, { message: 'API server error' }.to_json
+          end
         end
       end
-
-      routing.on('members') do
-        # PUT api/v1/chatroom/[chatr_id]/members
-        routing.put do
-          req_data = JSON.parse(routing.body.read)
-
-          member = AddMember.call(
-            account: @auth_account,
-            chatroom: @req_chatroom,
-            memb_email: req_data['email']
-          )
-
-          { data: member }.to_json
-        rescue AddMember::ForbiddenError => e
-          routing.halt 403, { message: e.message }.to_json
-        rescue StandardError
-          routing.halt 500, { message: 'API server error' }.to_json
-        end
-
-        # DELETE api/v1/chatroom/[chatr_id]/members
-        routing.delete do
-          req_data = JSON.parse(routing.body.read)
-          member = RemoveMember.call(
-            req_username: @auth_account.username,
-            memb_email: req_data['email'],
-            chatrroom_id: chatr_id
-          )
-
-          { message: "#{member.username} removed from chatroom",
-            data: member }.to_json
-        rescue RemoveMember::ForbiddenError => e
-          routing.halt 403, { message: e.message }.to_json
-        rescue StandardError
-          routing.halt 500, { message: 'API server error' }.to_json
-        end
-      end
-
       # GET api/v1/chatrooms
       routing.is do
         routing.get do
+          Api.logger.info('chatrooms')
           chatrooms = ChatroomPolicy::AccountScope.new(@auth_account).viewable
+          Api.logger.info("chatrooms: #{chatrooms}")
           JSON.pretty_generate(data: chatrooms)
-        rescue StandardError
+        rescue StandardError => e
+          Api.logger.error "UNKNOWN ERROR: #{e.message}"
           routing.halt 403, { message: 'Could not find any chatrooms' }.to_json
         end
 
