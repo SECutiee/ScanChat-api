@@ -78,7 +78,6 @@ module ScanChat
       thread.save
     end
 
-    # rubocop:disable Metrics/MethodLength
     def to_h
       {
         type: 'chatroom',

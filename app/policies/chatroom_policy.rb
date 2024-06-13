@@ -46,7 +46,7 @@ module ScanChat
       chatroom_is_not_expired? && !(account_is_owner? || account_is_member?)
     end
 
-    def summary
+    def summary # rubocop:disable Metrics/MethodLength
       {
         can_view: can_view?,
         can_edit: can_edit?,

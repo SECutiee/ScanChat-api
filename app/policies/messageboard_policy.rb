@@ -25,5 +25,4 @@ module ScanChat
       @messageboard.thread.owner == @account
     end
   end
-
 end

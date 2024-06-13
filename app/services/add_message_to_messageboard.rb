@@ -17,9 +17,9 @@ module ScanChat
       end
     end
 
-    def self.call(account:, messageboard:, message_data:)
-      policy = MessageboardPolicy.new(account, messageboard)
-      raise ForbiddenError unless policy.can_add_messages?
+    def self.call(messageboard:, message_data:)
+      # policy = MessageboardPolicy.new(account, messageboard)
+      # raise ForbiddenError unless policy.can_add_messages?
 
       add_message(messageboard, message_data)
     end
