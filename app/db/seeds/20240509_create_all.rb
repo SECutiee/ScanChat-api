@@ -9,9 +9,9 @@ Sequel.seed(:development) do
     create_accounts
     create_owned_chatrooms
     create_owned_messageboards
+    add_members_to_chatrooms
     add_messages_to_chatroom
     add_messages_to_messageboard
-    add_members_to_chatrooms
   end
 end
 
@@ -31,32 +31,39 @@ def create_accounts
   end
 end
 
-def create_owned_chatrooms # rubocop:disable Metrics/MethodLength
+def create_owned_chatrooms
   ACCOUNTS_INFO.each do |owner|
     account = ScanChat::Account.first(username: owner['username'])
     chatr_data = CHATROOM_INFO.select { |chatr| chatr['owner_username'] == owner['username'] }
 
     chatr_data.each do |chatr|
-      new_chatroom = ScanChat::CreateChatroomForOwner.call(
-        owner_id: account.id, name: chatr['name'], is_private: chatr['is_private']
+      ScanChat::CreateChatroomForOwner.call(
+        account: account, chatroom_data: chatr
       )
-      new_chatroom.description = chatr['description']
-      new_chatroom.save
     end
   end
 end
 
-def create_owned_messageboards # rubocop:disable Metrics/MethodLength
+def create_owned_messageboards
   ACCOUNTS_INFO.each do |owner|
     account = ScanChat::Account.first(username: owner['username'])
     msgb_data = MESSAGEBOARD_INFO.select { |msgb| msgb['owner_username'] == owner['username'] }
 
     msgb_data.each do |msgb|
-      new_messageboard = ScanChat::CreateMessageboardForOwner.call(
-        owner_id: account.id, name: msgb['name'], is_anonymous: msgb['is_anonymous']
+      ScanChat::CreateMessageboardForOwner.call(
+        account: account, messageboard_data: msgb
       )
-      new_messageboard.description = msgb['description']
-      new_messageboard.save
+    end
+  end
+end
+
+def add_members_to_chatrooms
+  MEMBER_INFO.each do |member_chatroom|
+    member_chatroom['username'].each do |username|
+      chatroom = ScanChat::Chatroom.all.find { |chatr| chatr.name == member_chatroom['chatroom_name'] }
+      owner = ScanChat::Account.find(username: chatroom.owner.username)
+
+      ScanChat::AddMemberToChatroom.call(account: owner, chatroom: chatroom, member_username: username)
     end
   end
 end
@@ -65,7 +72,7 @@ def add_messages_to_chatroom
   MESSAGES_INFO.each do |message|
     thread = ScanChat::Thread.all.find { |thr| thr.name == message['thread_name'] }
     sender = ScanChat::Account.first(username: message['sender_username'])
-    next unless thread.chatroom
+    next unless thread.thread_type == 'chatroom'
 
     ScanChat::AddMessageToChatroom.call(account: sender, chatroom: thread.chatroom, message_data: message)
   end
@@ -74,18 +81,9 @@ end
 def add_messages_to_messageboard
   MESSAGES_INFO.each do |message|
     thread = ScanChat::Thread.all.find { |thr| thr.name == message['thread_name'] }
-    # _sender = ScanChat::Account.first(username: message['sender_username'])
-    next unless thread.messageboard
+    sender = ScanChat::Account.first(username: message['sender_username'])
+    next unless thread.thread_type == 'messageboard'
 
-    ScanChat::AddMessageToMessageboard.call(messageboard: thread.messageboard, message_data: message)
-  end
-end
-
-def add_members_to_chatrooms
-  MEMBER_INFO.each do |member_chatroom|
-    member_chatroom['username'].each do |username|
-      chatr_id = ScanChat::Chatroom.all.find { |chatr| chatr.name == member_chatroom['chatroom_name'] }.id
-      ScanChat::AddMemberToChatroom.call(username: username, chatroom_id: chatr_id)
-    end
+    ScanChat::AddMessageToMessageboard.call(account: sender, messageboard: thread.messageboard, message_data: message)
   end
 end

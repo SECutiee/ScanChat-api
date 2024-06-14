@@ -5,7 +5,7 @@
 class AccountPolicy
   def initialize(requestor, account)
     @requestor = requestor
-    @account = account
+    @this_account = account
   end
 
   def can_view?
@@ -31,6 +31,6 @@ class AccountPolicy
   private
 
   def self_request?
-    @requestor == @account
+    @requestor == @this_account
   end
 end

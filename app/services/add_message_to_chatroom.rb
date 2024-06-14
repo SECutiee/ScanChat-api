@@ -21,9 +21,12 @@ module ScanChat
       policy = ChatroomPolicy.new(account, chatroom)
       raise ForbiddenError unless policy.can_add_messages?
 
-      # Api.logger.info("messagedata: #{message_data}")
-      message_data['sender_id'] = account.id
-      add_message(chatroom, message_data)
+      # message_data.delete('sender_username') unless message_data['sender_username'].nil?
+      # message_data.delete('thread_name') unless message_data['thread_name'].nil?
+      msg_data = {}
+      msg_data['content'] = message_data['content']
+      msg_data['sender_id'] = account.id
+      add_message(chatroom, msg_data)
     end
 
     def self.add_message(chatroom, message_data)

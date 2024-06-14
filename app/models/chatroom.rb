@@ -64,6 +64,7 @@ module ScanChat
     end
 
     def description=(value)
+      puts "description=#{value}"
       thread.description = value
       thread.save
     end
