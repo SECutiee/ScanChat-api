@@ -41,8 +41,9 @@ module ScanChat
       # POST /api/v1/auth/sso
       routing.post 'sso' do
         auth_request = JSON.parse(request.body.read, symbolize_names: true)
-
+        puts auth_request
         auth_account = AuthorizeSso.new.call(auth_request[:access_token])
+        puts auth_account ### problem
         { data: auth_account }.to_json
       rescue StandardError => e
         Api.logger.warn "FAILED to validate Github account: #{e.inspect}" \

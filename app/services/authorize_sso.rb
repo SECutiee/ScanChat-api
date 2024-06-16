@@ -14,15 +14,32 @@ module ScanChat
     end
 
     def get_github_account(access_token)
-      gh_response = HTTP.headers(
+      gh_user_response = HTTP.headers(
         user_agent: 'ScanChat',
         authorization: "token #{access_token}",
         accept: 'application/json'
       ).get(ENV.fetch('GITHUB_ACCOUNT_URL', nil))
 
-      raise unless gh_response.status == 200
+      raise unless gh_user_response.status == 200
 
-      account = GithubAccount.new(JSON.parse(gh_response))
+      puts gh_user_response
+      gh_email_response = HTTP.headers(
+        user_agent: 'ScanChat',
+        authorization: "token #{access_token}",
+        accept: 'application/json'
+      ).get(ENV.fetch('GITHUB_ACCOUNT_EMAIL_URL', nil))
+
+      raise unless gh_email_response.status == 200
+
+      gh_user_response_hash = JSON.parse(gh_user_response)
+      gh_email_response_hash = JSON.parse(gh_email_response)
+
+      gh_response = {
+        'login' => gh_user_response_hash['login'],
+        'email' => gh_email_response_hash[0]['email']
+      }
+
+      account = GithubAccount.new(gh_response)
       { username: account.username, email: account.email }
     end
 
