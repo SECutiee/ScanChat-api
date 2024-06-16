@@ -2,7 +2,6 @@
 
 require_relative 'app'
 
-# rubocop:disable Metrics/BlockLength
 module ScanChat
   # Web controller for ScanChat API
   class Api < Roda

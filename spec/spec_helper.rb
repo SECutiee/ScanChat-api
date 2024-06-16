@@ -46,6 +46,11 @@ DATA = {
   members: YAML.safe_load_file('app/db/seeds/chatrooms_members.yml')
 }.freeze
 
+## SSO fixtures
+GH_ACCOUNT_RESPONSE = YAML.load_file('spec/fixtures/github_token_response.yml')
+GOOD_GH_ACCESS_TOKEN = GH_ACCOUNT_RESPONSE.keys.first
+SSO_ACCOUNT = YAML.load_file('spec/fixtures/sso_account.yml')
+
 def create_accounts(account_data)
   account_data.each do |account_info|
     ScanChat::Account.create(account_info)
