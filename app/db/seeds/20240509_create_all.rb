@@ -40,7 +40,7 @@ def create_owned_chatrooms
     auth = scoped_auth(auth_token)
 
     chatr_data.each do |chatr|
-      ScanChat::CreateChatroomForOwner.call(auth: auth, chatroom_data: chatr)
+      ScanChat::CreateChatroomForOwner.call(auth:, chatroom_data: chatr)
     end
   end
 end
@@ -54,7 +54,7 @@ def create_owned_messageboards
     auth = scoped_auth(auth_token)
 
     msgb_data.each do |msgb|
-      ScanChat::CreateMessageboardForOwner.call(auth: auth, messageboard_data: msgb)
+      ScanChat::CreateMessageboardForOwner.call(auth:, messageboard_data: msgb)
     end
   end
 end
@@ -68,7 +68,7 @@ def add_members_to_chatrooms
       auth_token = AuthToken.create(owner)
       auth = scoped_auth(auth_token)
 
-      ScanChat::AddMemberToChatroom.call(auth: auth, chatroom: chatroom, member_username: username)
+      ScanChat::AddMemberToChatroom.call(auth:, chatroom:, member_username: username)
     end
   end
 end
@@ -82,7 +82,7 @@ def add_messages_to_chatroom
     auth_token = AuthToken.create(sender)
     auth = scoped_auth(auth_token)
 
-    ScanChat::AddMessageToChatroom.call(auth: auth, chatroom: thread.chatroom, message_data: message)
+    ScanChat::AddMessageToChatroom.call(auth:, chatroom: thread.chatroom, message_data: message)
   end
 end
 
@@ -95,6 +95,6 @@ def add_messages_to_messageboard
     auth_token = AuthToken.create(sender)
     auth = scoped_auth(auth_token)
 
-    ScanChat::AddMessageToMessageboard.call(auth: auth, messageboard: thread.messageboard, message_data: message)
+    ScanChat::AddMessageToMessageboard.call(auth:, messageboard: thread.messageboard, message_data: message)
   end
 end
