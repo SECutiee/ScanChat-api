@@ -36,8 +36,6 @@ module ScanChat
         # POST /api/v1/auth/authenticate
         routing.post do
           auth_account = AuthenticateAccount.call(@request_data)
-
-          puts "AUTH_ACCOUNT: #{auth_account}"
           { data: auth_account }.to_json
         rescue AuthenticateAccount::UnauthorizedError
           routing.halt '401', { message: 'Invalid credentials' }.to_json
@@ -46,15 +44,11 @@ module ScanChat
 
       # POST /api/v1/auth/sso
       routing.post 'sso' do
-        auth_request = JSON.parse(request.body.read, symbolize_names: true)
-        puts auth_request
-        auth_account = AuthorizeSso.new.call(auth_request[:access_token])
-        puts auth_account ### problem
+        auth_account = AuthorizeSso.new.call(@request_data[:access_token])
         { data: auth_account }.to_json
       rescue StandardError => e
         Api.logger.warn "FAILED to validate Github account: #{e.inspect}" \
                         "\n#{e.backtrace}"
-
         routing.halt 400
       end
     end

@@ -65,7 +65,9 @@ describe 'Test Authentication Routes' do
     it 'HAPPY AUTH SSO: should authenticate+authorize new valid SSO account' do
       gh_access_token = { access_token: GOOD_GH_ACCESS_TOKEN }
 
-      post 'api/v1/auth/sso', gh_access_token.to_json, @req_header
+      post 'api/v1/auth/sso',
+           SignedRequest.new(app.config).sign(gh_access_token).to_json,
+           @req_header
 
       auth_account = JSON.parse(last_response.body)['data']
       account = auth_account['attributes']['account']['attributes']
@@ -77,13 +79,15 @@ describe 'Test Authentication Routes' do
     end
 
     it 'HAPPY AUTH SSO: should authorize existing SSO account' do
-      Credence::Account.create(
+      ScanChat::Account.create(
         username: SSO_ACCOUNT['sso_username'],
         email: SSO_ACCOUNT['email']
       )
 
       gh_access_token = { access_token: GOOD_GH_ACCESS_TOKEN }
-      post 'api/v1/auth/sso', gh_access_token.to_json, @req_header
+      post 'api/v1/auth/sso',
+           SignedRequest.new(app.config).sign(gh_access_token).to_json,
+           @req_header
 
       auth_account = JSON.parse(last_response.body)['data']
       account = auth_account['attributes']['account']['attributes']
