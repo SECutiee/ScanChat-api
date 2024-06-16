@@ -17,10 +17,10 @@ module ScanChat
       end
     end
 
-    def self.call(account:, messageboard:)
+    def self.call(auth:, messageboard:)
       raise NotFoundError unless messageboard
 
-      policy = MessageboardPolicy.new(account, messageboard)
+      policy = MessageboardPolicy.new(auth[:account], messageboard, auth[:scope])
       raise ForbiddenError unless policy.can_view?
 
       messageboard.full_details.merge(policies: policy.summary)

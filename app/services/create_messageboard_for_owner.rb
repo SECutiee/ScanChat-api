@@ -6,19 +6,21 @@ module ScanChat
     # Error for  cannot add messages
     class ForbiddenError < StandardError
       def message
-        'You are not allowed to create chatrooms'
+        'You are not allowed to create messageboards'
       end
     end
 
     # Error for requests with illegal attributes
     class IllegalRequestError < StandardError
       def message
-        'Cannot create a chatroom with those attributes'
+        'Cannot create a messageboard with those attributes'
       end
     end
 
-    def self.call(account:, messageboard_data:)
-      create_messageboard(account.id, messageboard_data)
+    def self.call(auth:, messageboard_data:)
+      raise ForbiddenError unless auth[:scope].can_write?('messageboards')
+
+      create_messageboard(auth[:account].id, messageboard_data)
     end
 
     def self.create_messageboard(owner_id, msgb_data)

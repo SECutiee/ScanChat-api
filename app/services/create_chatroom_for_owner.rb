@@ -17,8 +17,10 @@ module ScanChat
       end
     end
 
-    def self.call(account:, chatroom_data:)
-      create_chatroom(account.id, chatroom_data)
+    def self.call(auth:, chatroom_data:)
+      raise ForbiddenError unless auth[:scope].can_write?('chatrooms')
+
+      create_chatroom(auth[:account].id, chatroom_data)
     end
 
     def self.create_chatroom(owner_id, chatroom_data)

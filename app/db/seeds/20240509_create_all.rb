@@ -34,12 +34,13 @@ end
 def create_owned_chatrooms
   ACCOUNTS_INFO.each do |owner|
     account = ScanChat::Account.first(username: owner['username'])
-    chatr_data = CHATROOM_INFO.select { |chatr| chatr['owner_username'] == owner['username'] }
+    chatr_data = CHATROOM_INFO.select { |chatr| chatr['owner_username'] == account.username }
+
+    auth_token = AuthToken.create(account)
+    auth = scoped_auth(auth_token)
 
     chatr_data.each do |chatr|
-      ScanChat::CreateChatroomForOwner.call(
-        account: account, chatroom_data: chatr
-      )
+      ScanChat::CreateChatroomForOwner.call(auth: auth, chatroom_data: chatr)
     end
   end
 end
@@ -47,12 +48,13 @@ end
 def create_owned_messageboards
   ACCOUNTS_INFO.each do |owner|
     account = ScanChat::Account.first(username: owner['username'])
-    msgb_data = MESSAGEBOARD_INFO.select { |msgb| msgb['owner_username'] == owner['username'] }
+    msgb_data = MESSAGEBOARD_INFO.select { |msgb| msgb['owner_username'] == account.username }
+
+    auth_token = AuthToken.create(account)
+    auth = scoped_auth(auth_token)
 
     msgb_data.each do |msgb|
-      ScanChat::CreateMessageboardForOwner.call(
-        account: account, messageboard_data: msgb
-      )
+      ScanChat::CreateMessageboardForOwner.call(auth: auth, messageboard_data: msgb)
     end
   end
 end
@@ -63,7 +65,10 @@ def add_members_to_chatrooms
       chatroom = ScanChat::Chatroom.all.find { |chatr| chatr.name == member_chatroom['chatroom_name'] }
       owner = ScanChat::Account.find(username: chatroom.owner.username)
 
-      ScanChat::AddMemberToChatroom.call(account: owner, chatroom: chatroom, member_username: username)
+      auth_token = AuthToken.create(owner)
+      auth = scoped_auth(auth_token)
+
+      ScanChat::AddMemberToChatroom.call(auth: auth, chatroom: chatroom, member_username: username)
     end
   end
 end
@@ -74,7 +79,10 @@ def add_messages_to_chatroom
     sender = ScanChat::Account.first(username: message['sender_username'])
     next unless thread.thread_type == 'chatroom'
 
-    ScanChat::AddMessageToChatroom.call(account: sender, chatroom: thread.chatroom, message_data: message)
+    auth_token = AuthToken.create(sender)
+    auth = scoped_auth(auth_token)
+
+    ScanChat::AddMessageToChatroom.call(auth: auth, chatroom: thread.chatroom, message_data: message)
   end
 end
 
@@ -84,6 +92,9 @@ def add_messages_to_messageboard
     sender = ScanChat::Account.first(username: message['sender_username'])
     next unless thread.thread_type == 'messageboard'
 
-    ScanChat::AddMessageToMessageboard.call(account: sender, messageboard: thread.messageboard, message_data: message)
+    auth_token = AuthToken.create(sender)
+    auth = scoped_auth(auth_token)
+
+    ScanChat::AddMessageToMessageboard.call(auth: auth, messageboard: thread.messageboard, message_data: message)
   end
 end

@@ -17,18 +17,14 @@ module ScanChat
       end
     end
 
-    def self.call(account:, messageboard:, message_data:)
-      # policy = MessageboardPolicy.new(account, messageboard)
+    def self.call(auth:, messageboard:, message_data:)
+      # policy = MessageboardPolicy.new(auth[:account], messageboard, auth[:scope])
       # raise ForbiddenError unless policy.can_add_messages?
 
       msg_data = {}
       msg_data['content'] = message_data['content']
-      msg_data['sender_id'] = account.id
-      add_message(messageboard, msg_data)
-    end
-
-    def self.add_message(messageboard, message_data)
-      messageboard.add_message(message_data)
+      msg_data['sender_id'] = auth[:account].id
+      messageboard.add_message(msg_data)
     rescue Sequel::MassAssignmentRestriction
       raise IllegalRequestError
     end
