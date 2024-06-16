@@ -14,6 +14,8 @@ module ScanChat
 
     include SecureRequestHelpers
 
+    UNAUTH_MSG = { message: 'Unauthorized Request' }.to_json
+
     route do |routing|
       # Api.logger.info 'Start routing'
       response['Content-Type'] = 'application/json'
@@ -22,7 +24,8 @@ module ScanChat
         routing.halt(403, { message: 'TLS/SSL Required' }.to_json)
 
       begin
-        @auth_account = authenticated_account(routing.headers)
+        @auth = authorization(routing.headers)
+        @auth_account = @auth[:account] if @auth
         Api.logger.info "Authenticated Account: #{@auth_account}"
       rescue AuthToken::InvalidTokenError
         Api.logger.info 'Invalid Token'

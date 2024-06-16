@@ -17,17 +17,17 @@ module ScanChat
       end
     end
 
-    def self.call(account:, chatroom:, message_data:)
-      policy = ChatroomPolicy.new(account, chatroom)
+    def self.call(auth:, chatroom:, message_data:)
+      policy = ChatroomPolicy.new(auth[:account], chatroom, auth[:scope])
       raise ForbiddenError unless policy.can_add_messages?
 
-      # Api.logger.info("messagedata: #{message_data}")
-      message_data['sender_id'] = account.id
-      add_message(chatroom, message_data)
-    end
+      # message_data.delete('sender_username') unless message_data['sender_username'].nil?
+      # message_data.delete('thread_name') unless message_data['thread_name'].nil?
+      msg_data = {}
+      msg_data['content'] = message_data['content']
+      msg_data['sender_id'] = auth[:account].id
 
-    def self.add_message(chatroom, message_data)
-      chatroom.add_message(message_data)
+      chatroom.add_message(msg_data)
     rescue Sequel::MassAssignmentRestriction
       raise IllegalRequestError
     end

@@ -6,20 +6,16 @@ require_relative 'app'
 module ScanChat
   # Web controller for ScanChat API
   class Api < Roda
-    # rubocop:disable Metrics/BlockLength
     route('messageboards') do |routing|
-      unauthorized_message = { message: 'Unauthorized Request' }.to_json
-      routing.halt(403, unauthorized_message) unless @auth_account
+      routing.halt(403, UNAUTH_MSG) unless @auth_account
 
       @chatroom_route = "#{@api_root}/messageboards"
-      routing.on String do |thread_id|
+      routing.on String do |msgb_id|
         @req_messageboard = Messageboard.first(id: msgb_id)
 
         # GET api/v1/messageboards/[ID]
         routing.get do
-          messageboard = GetMessageboardQuery.call(
-            account: @auth_account, messageboard: @req_messageboard
-          )
+          messageboard = GetMessageboardQuery.call(auth: @auth, messageboard: @req_messageboard)
 
           { data: messageboard }.to_json
         rescue GetMessageboardQuery::ForbiddenError => e
@@ -27,7 +23,7 @@ module ScanChat
         rescue GetMessageboardQuery::NotFoundError => e
           routing.halt 404, { message: e.message }.to_json
         rescue StandardError => e
-          puts "FIND MESSAGEBOARD ERROR: #{e.inspect}"
+          Api.logger.error "FIND MESSAGEBOARD ERROR: #{e.inspect}"
           routing.halt 500, { message: 'API server error' }.to_json
         end
 
@@ -35,7 +31,7 @@ module ScanChat
           # POST api/v1/messageboards/[thread_id]/messages
           routing.post do
             new_message = AddMessageToMessageboard.call(
-              account: @auth_account,
+              auth: @auth,
               messageboard: @req_messageboard,
               message_data: JSON.parse(routing.body.read)
             )
@@ -51,25 +47,6 @@ module ScanChat
             Api.logger.warn "Could not add message to messageboard: #{e.message}"
             routing.halt 500, { message: 'API server error' }.to_json
           end
-        end
-
-        # GET api/v1/messageboards/[thread_id]
-        routing.get do
-          # thread = Thread.first(id: thread_id)
-          # thread ? thread.to_json : raise('Messageboard not found')
-          messageboard = Messageboard.first(thread_id:)
-          raise 'Messageboard not found' unless messageboard
-
-          output = messageboard
-          JSON.pretty_generate(output)
-          messageboard = Messageboard.first(thread_id:)
-          raise 'Messageboard not found' unless messageboard
-
-          output = messageboard
-          JSON.pretty_generate(output)
-        rescue StandardError => e
-          Api.logger.error "UNKNOWN ERROR: #{e.message}"
-          routing.halt 404, { message: e.message }.to_json
         end
       end
 
@@ -97,8 +74,10 @@ module ScanChat
 
         # POST api/v1/messageboards
         routing.post do
-          new_data = JSON.parse(routing.body.read)
-          new_msgb = @auth_account.add_owned_messageboard(new_data)
+          new_msgb = CreateMessageboardForOwner.call(
+            auth: @auth,
+            masseageboard_data: JSON.parse(routing.body.read)
+          )
 
           response.status = 201
           response['Location'] = "#{@msgb_route}/#{new_msgb.id}"
@@ -106,6 +85,8 @@ module ScanChat
         rescue Sequel::MassAssignmentRestriction
           Api.logger.warn "MASS-ASSIGNMENT: #{new_data.keys}"
           routing.halt 400, { message: 'Illegal Attributes' }.to_json
+        rescue CreateMessageboardForOwner::ForbiddenError => e
+          routing.halt 403, { message: e.message }.to_json
         rescue StandardError => e
           Api.logger.error "UNKOWN ERROR: #{e.message}"
           routing.halt 500, { message: 'Unknown server error' }.to_json
@@ -114,3 +95,4 @@ module ScanChat
     end
   end
 end
+# rubocop:enable Metrics/BlockLength

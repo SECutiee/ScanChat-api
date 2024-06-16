@@ -64,6 +64,7 @@ module ScanChat
     end
 
     def description=(value)
+      puts "description=#{value}"
       thread.description = value
       thread.save
     end
@@ -78,7 +79,6 @@ module ScanChat
       thread.save
     end
 
-    # rubocop:disable Metrics/MethodLength
     def to_h
       {
         type: 'chatroom',

@@ -18,7 +18,7 @@ module ScanChat
 
         routing.get do
           message = GetMessageQuery.call(
-            requestor: @auth_account, message: @req_message
+            auth: @auth, message: @req_message
           )
 
           { data: message }.to_json
@@ -27,7 +27,7 @@ module ScanChat
         rescue GetMessageQuery::NotFoundError => e
           routing.halt 404, { message: e.message }.to_json
         rescue StandardError => e
-          puts "GET MESSAGE ERROR: #{e.inspect}"
+          Api.logger.warn "MESSAGE Error: #{e.inspect}"
           routing.halt 500, { message: 'API server error' }.to_json
         end
       end

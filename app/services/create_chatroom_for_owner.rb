@@ -17,20 +17,15 @@ module ScanChat
       end
     end
 
-    def self.call(account:, chatroom_data:)
-      # TODO: add policy check here, maybe also needs new policy
-      # policy = ChatroomPolicy.new(account, chatroom)
-      # raise ForbiddenError unless policy.can_add_messages?
-      create_chatroom(account.id, chatroom_data)
+    def self.call(auth:, chatroom_data:)
+      raise ForbiddenError unless auth[:scope].can_write?('chatrooms')
+
+      create_chatroom(auth[:account].id, chatroom_data)
     end
 
     def self.create_chatroom(owner_id, chatroom_data)
-      # name = chatroom_data['name']
-      # is_private = chatroom_data['is_private']
-      # description = chatroom_data['description']
-      # expiration_date = chatroom_data['expiration_date']
-      # Api.logger.info("chatroom_data #{chatroom_data}")
       is_private = chatroom_data.delete('is_private')
+      chatroom_data.delete('owner_username') unless chatroom_data['owner_username'].nil?
       chatroom_data['thread_type'] = 'chatroom'
       new_thread = ScanChat::Thread.create(chatroom_data)
       # Api.logger.info('new_thread')

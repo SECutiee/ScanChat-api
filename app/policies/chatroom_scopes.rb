@@ -2,7 +2,8 @@
 
 module ScanChat
   # Policy to determine if account can view a project
-  # The AccountScope class is used to determine the scope of chatrooms that an account can view. If the current account is the target account, you can view all items of the target account;
+  # The AccountScope class is used to determine the scope of chatrooms that an account can view. 
+  # If the current account is the target account, you can view all items of the target account;
   # If not, you can only view those chatrooms among the target account's chatrooms that have the current account as a members.
   class ChatroomPolicy
     # Scope of chatroom policies

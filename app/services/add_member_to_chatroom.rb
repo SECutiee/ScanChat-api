@@ -10,9 +10,11 @@ module ScanChat
       end
     end
 
-    def self.call(account:, chatroom:, member_username:)
+    def self.call(auth:, chatroom:, member_username:)
       invitee = Account.first(username: member_username)
-      policy = ChatroomJoinRequestPolicy.new(chatroom, account, invitee)
+      policy = ChatroomJoinRequestPolicy.new(
+        chatroom, auth[:account], invitee, auth[:scope]
+      )
       raise ForbiddenError unless policy.can_invite?
 
       chatroom.add_member(invitee)

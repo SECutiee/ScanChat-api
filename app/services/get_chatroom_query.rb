@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module ScanChat
-  # check if account is allowed to see chatroom details
+  # check if auth is allowed to see chatroom details
   class GetChatroomQuery
     # Error for not allowed to access chatroom
     class ForbiddenError < StandardError
@@ -17,10 +17,10 @@ module ScanChat
       end
     end
 
-    def self.call(account:, chatroom:)
+    def self.call(auth:, chatroom:)
       raise NotFoundError unless chatroom
 
-      policy = ChatroomPolicy.new(account, chatroom)
+      policy = ChatroomPolicy.new(auth[:account], chatroom, auth[:scope])
       raise ForbiddenError unless policy.can_view?
 
       chatroom.full_details.merge(policies: policy.summary)
