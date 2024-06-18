@@ -14,6 +14,10 @@ module ScanChat
       can_read? && (account_is_owner? || (chatroom_is_not_expired? && account_is_member?))
     end
 
+    def can_invite?
+      True # TODO: add the correct rule here (@ju)
+    end
+
     # duplication is ok!
     def can_edit?
       can_write? && chatroom_is_not_expired? && account_is_owner?
@@ -28,7 +32,7 @@ module ScanChat
     end
 
     def can_add_messages?
-      # can_write? && 
+      # can_write? &&
       chatroom_is_not_expired? && (account_is_owner? || account_is_member?)
     end
 
@@ -46,7 +50,7 @@ module ScanChat
     end
 
     def can_join?
-      # can_write? && 
+      # can_write? &&
       chatroom_is_not_expired? && !(account_is_owner? || account_is_member?)
     end
 
@@ -83,7 +87,7 @@ module ScanChat
     end
 
     def chatroom_is_not_expired?
-      Api.logger.info("chatroom_is_not_expired? #{@chatroom} #{@chatroom.expiration_date.nil? || @chatroom.expiration_date > Time.now}")
+      # Api.logger.info("chatroom_is_not_expired? #{@chatroom} #{@chatroom.expiration_date.nil? || @chatroom.expiration_date > Time.now}")
       @chatroom.expiration_date.nil? || @chatroom.expiration_date > Time.now
     end
   end

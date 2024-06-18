@@ -44,6 +44,7 @@ module ScanChat
       # Load crypto keys
       SecureDB.setup(ENV.delete('DB_KEY')) # Load crypto key
       AuthToken.setup(ENV.fetch('MSG_KEY')) # Load crypto key
+      QRToken.setup(ENV.fetch('QR_KEY')) # Load crypto key
     end
     # rubocop:enable Lint/ConstantDefinitionInBlock
 
