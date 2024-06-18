@@ -30,7 +30,7 @@ class QRToken
     @thread_id = contents['thread_id']
     @token_creator_id = contents['token_creator_id']
     raise InvalidTokenError unless ACTIONS.include?(@action)
-    raise InvalidTokenError if @action.is_nil? || @thread_id.is_nil? || @token_creator_id.is_nil?
+    raise InvalidTokenError if @action.nil? || @thread_id.nil? || @token_creator_id.nil?
   end
 
   # Check if token is expired
@@ -64,6 +64,7 @@ class QRToken
                  'thread_id' => thread_id,
                  'token_creator_id' => token_creator_id,
                  'exp' => expires(expiration) }
+    puts "contents: #{contents}"
     AuthToken.new(tokenize(contents))
   end
 
@@ -76,8 +77,11 @@ class QRToken
     return nil unless message
 
     message_json = message.to_json
+    puts "message_json: #{message_json}"
     ciphertext = base_encrypt(message_json)
+    puts "ciphertext: #{ciphertext}"
     Base64.urlsafe_encode64(ciphertext)
+    puts "Base64.urlsafe_encode64(ciphertext): #{Base64.urlsafe_encode64(ciphertext)}"
   end
 
   # Detokenize and return contents, or raise error
