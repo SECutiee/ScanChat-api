@@ -123,10 +123,11 @@ module ScanChat
         routing.get do
           Api.logger.info('chatrooms')
           chatrooms = ChatroomPolicy::AccountScope.new(@auth_account).viewable
-          Api.logger.info("chatrooms: #{chatrooms}")
+          puts "chatrooms: #{chatrooms}"
+          puts JSON.pretty_generate(data: chatrooms)
           JSON.pretty_generate(data: chatrooms)
         rescue StandardError => e
-          Api.logger.error "UNKNOWN ERROR: #{e.message}"
+          puts "UNKNOWN ERROR: #{e.message}"
           routing.halt 403, { message: 'Could not find any chatrooms' }.to_json
         end
 
