@@ -9,7 +9,7 @@ module ScanChat
     route('auth') do |routing|
       # All requests in this route require signed requests
       begin
-        @request_data = SignedRequest.new(Api.config).parse(request.body.read)
+        @request_data = SignedRequest.new(Api.config).parse(request.body.read) # request.body.read can not be used twice
       rescue SignedRequest::VerificationError
         routing.halt '403', { message: 'Must sign request' }.to_json
       end
