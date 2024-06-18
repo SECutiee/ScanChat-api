@@ -17,12 +17,10 @@ module ScanChat
       end
     end
 
-    def self.call(account:, chatroom:, chatroom_data:)
-      # policy = ChatroomPolicy.new(account, chatroom)
-      # raise ForbiddenError unless policy.can_add_messages?
-      # TODO add policy (@ju)
+    def self.call(auth:, chatroom:, chatroom_data:)
+      policy = ChatroomPolicy.new(auth[:account], chatroom, auth[:scope])
+      raise ForbiddenError unless policy.can_add_messages?
 
-      # Api.logger.info("messagedata: #{message_data}")
       edit_chatroom(chatroom, chatroom_data)
     end
 

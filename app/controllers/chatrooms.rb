@@ -147,7 +147,6 @@ module ScanChat
               chatroom: @req_chatroom,
               chatroom_data: req_data
             )
-
             { data: edited_chatroom }.to_json
           rescue EditChatroom::ForbiddenError => e
             routing.halt 403, { message: e.message }.to_json
@@ -176,8 +175,6 @@ module ScanChat
         routing.get do
           Api.logger.info('chatrooms')
           chatrooms = ChatroomPolicy::AccountScope.new(@auth_account).viewable
-          puts "chatrooms: #{chatrooms}"
-          puts JSON.pretty_generate(data: chatrooms)
           JSON.pretty_generate(data: chatrooms)
         rescue StandardError => e
           puts "UNKNOWN ERROR: #{e.message}"

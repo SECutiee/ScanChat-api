@@ -32,8 +32,7 @@ module ScanChat
     end
 
     def can_add_messages?
-      # can_write? &&
-      chatroom_is_not_expired? && (account_is_owner? || account_is_member?)
+      can_write? && chatroom_is_not_expired? && (account_is_owner? || account_is_member?)
     end
 
     def can_delete_messages?
@@ -41,8 +40,7 @@ module ScanChat
     end
 
     def can_add_members?
-      # can_write? &&
-      chatroom_is_not_expired? && account_is_owner?
+      can_write? && chatroom_is_not_expired? && account_is_owner?
     end
 
     def can_remove_members?
@@ -50,8 +48,7 @@ module ScanChat
     end
 
     def can_join?
-      # can_write? &&
-      chatroom_is_not_expired? && !(account_is_owner? || account_is_member?)
+      can_write? && chatroom_is_not_expired? && !(account_is_owner? || account_is_member?)
     end
 
     def summary # rubocop:disable Metrics/MethodLength
