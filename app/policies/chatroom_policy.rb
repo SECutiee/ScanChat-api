@@ -14,10 +14,6 @@ module ScanChat
       can_read? && (account_is_owner? || (chatroom_is_not_expired? && account_is_member?))
     end
 
-    def can_invite?
-      True # TODO: add the correct rule here (@ju)
-    end
-
     # duplication is ok!
     def can_edit?
       can_write? && chatroom_is_not_expired? && account_is_owner?

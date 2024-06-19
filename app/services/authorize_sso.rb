@@ -22,7 +22,7 @@ module ScanChat
 
       raise unless gh_user_response.status == 200
 
-      puts gh_user_response
+      # puts gh_user_response
       gh_email_response = HTTP.headers(
         user_agent: 'ScanChat',
         authorization: "token #{access_token}",
