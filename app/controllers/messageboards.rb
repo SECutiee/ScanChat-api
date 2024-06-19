@@ -25,7 +25,8 @@ module ScanChat
       end
 
       routing.on String do |msgb_id|
-        @req_messageboard = Messageboard.first(id: msgb_id)
+        @req_messageboard = Messageboard.first(thread_id: msgb_id)
+        puts "msgb_id: #{msgb_id}"
         routing.on('messages') do
           # POST api/v1/messageboards/[thread_id]/messages
           routing.post do
@@ -96,8 +97,10 @@ module ScanChat
 
         # GET api/v1/messageboards/[msgb_id]
         routing.get do
-          messageboard = GetMessageboardQuery.call(auth: @auth, messageboard: @req_messageboard)
-
+          puts "right here"
+          puts "req_messageboard: #{@req_messageboard}"
+          messageboard = GetMessageboardQuery.call(messageboard: @req_messageboard)
+          puts "messageboard: #{messageboard}"
           { data: messageboard }.to_json
         rescue GetMessageboardQuery::ForbiddenError => e
           routing.halt 403, { message: e.message }.to_json
