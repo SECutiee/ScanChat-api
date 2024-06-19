@@ -18,8 +18,7 @@ module ScanChat
     end
 
     def self.call(auth:, messageboard_data:)
-      raise ForbiddenError unless auth[:scope].can_write?('messageboards')
-
+      # raise ForbiddenError unless auth[:scope].can_write?('messageboards')
       create_messageboard(auth[:account].id, messageboard_data)
     end
 

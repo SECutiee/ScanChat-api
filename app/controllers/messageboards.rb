@@ -97,7 +97,6 @@ module ScanChat
 
         # GET api/v1/messageboards/[msgb_id]
         routing.get do
-          puts "right here"
           puts "req_messageboard: #{@req_messageboard}"
           messageboard = GetMessageboardQuery.call(messageboard: @req_messageboard)
           puts "messageboard: #{messageboard}"
@@ -126,7 +125,7 @@ module ScanChat
         routing.post do
           new_msgb = CreateMessageboardForOwner.call(
             auth: @auth,
-            masseageboard_data: JSON.parse(routing.body.read)
+            messageboard_data: JSON.parse(routing.body.read)
           )
 
           response.status = 201
