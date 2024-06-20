@@ -67,14 +67,6 @@ namespace :db do
 
   desc 'Delete database'
   task :delete => :load do
-    # TODO: needs change we don't need to delete everything like this because of the cascading delets
-    # professor: Credence::Account.dataset.destroy
-    # app.DB[:messages].delete
-    # app.DB[:chatrooms].delete
-    # app.DB[:messageboards].delete
-    # app.DB[:threads].delete
-    # ScanChat::Chatroom.dataset.destroy # TODO: fix this
-    # ScanChat::Messageboard.dataset.destroy
     ScanChat::Account.dataset.destroy
   end
 

@@ -18,9 +18,9 @@ module ScanChat
     end
 
     def self.call(thread_id:, auth:, action: 'join')
-      # raise NoPermissionsError unless auth[:scope].can_invite?('chatrooms')
-      # TODO change this permission to the right one (@ju)
-      # is this the right permission? (@ju)
+      chatroom = Chatroom.first(thread_id:)
+      policy = ChatroomPolicy.new(auth[:account], chatroom, auth[:scope])
+      raise NoPermissionsError unless policy.can_invite?
 
       generate_invite_token(thread_id, auth[:account].id, action)
     end

@@ -16,7 +16,6 @@ module ScanChat
 
     plugin :association_dependencies,
            owned_threads: :destroy
-    #  collaborations: :nullify TODO: what to do with messages when user is deleted?
     plugin :uuid, field: :id
     plugin :whitelist_security
     set_allowed_columns :username, :nickname, :image, :email, :password

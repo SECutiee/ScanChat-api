@@ -101,7 +101,7 @@ module ScanChat
           thread = Thread.first(id: msgb_id)
           raise 'Messageboard not found' unless thread
 
-          DeleteMessageboardByThreadId.call(thread_id: chatr_id)
+          DeleteMessageboardByThreadId.call(thread_id: msgb_id)
           { message: 'Messageboard deleted' }.to_json
         rescue StandardError => e
           Api.logger.error "UNKNOWN ERROR: #{e.message}"
@@ -111,7 +111,10 @@ module ScanChat
         # GET api/v1/messageboards/[msgb_id]
         routing.get do
           puts "req_messageboard: #{@req_messageboard}"
-          messageboard = GetMessageboardQuery.call(messageboard: @req_messageboard)
+          messageboard = GetMessageboardQuery.call(
+            auth: @auth,
+            messageboard: @req_messageboard
+          )
           puts "messageboard: #{messageboard}"
           { data: messageboard }.to_json
         rescue GetMessageboardQuery::ForbiddenError => e
@@ -124,7 +127,6 @@ module ScanChat
         end
       end
 
-      # TODO: problem is that we only get msgb and not the attributes in threads
       routing.is do
         # GET api/v1/messageboards
         routing.get do

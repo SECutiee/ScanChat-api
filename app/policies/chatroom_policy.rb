@@ -15,7 +15,13 @@ module ScanChat
     end
 
     def can_invite?
-      True # TODO: add the correct rule here (@ju)
+      if chatroom_is_private?
+        Api.logger.info("can_invite? chatroom_is_private? #{@chatroom}: #{chatroom_is_not_expired? && account_is_owner?}")
+        chatroom_is_not_expired? && account_is_owner?
+      else
+        Api.logger.info("can_invite? chatroom_is_private? #{@chatroom}: #{chatroom_is_not_expired? && (account_is_owner? || account_is_member?)}")
+        chatroom_is_not_expired? && (account_is_owner? || account_is_member?)
+      end
     end
 
     # duplication is ok!
@@ -61,7 +67,8 @@ module ScanChat
         can_delete_messages: can_delete_messages?,
         can_add_members: can_add_members?,
         can_remove_members: can_remove_members?,
-        can_join: can_join?
+        can_join: can_join?,
+        can_invite: can_invite?
       }
     end
 
@@ -81,6 +88,10 @@ module ScanChat
 
     def account_is_member?
       @chatroom.members.include?(@account)
+    end
+
+    def chatroom_is_private?
+      @chatroom.is_private
     end
 
     def chatroom_is_not_expired?

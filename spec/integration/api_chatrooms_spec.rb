@@ -123,7 +123,7 @@ describe 'Test chatrooms Handling' do
       create_owned_chatrooms(DATA[:accounts], DATA[:chatrooms])
 
       header 'AUTHORIZATION', auth_header(@account_data)
-      get 'api/v1/chatrooms/2%20or%20id%3E0' ### TODO this doesn't make sense
+      get 'api/v1/chatrooms/2%20or%20id%3E0'
 
       # deliberately not reporting detection -- don't give attacker information
       _(last_response.status).must_equal 404
