@@ -9,7 +9,7 @@ module ScanChat
     class AccountScope
       def initialize(current_account, target_account = nil)
         target_account ||= current_account
-        @full_scope = left_messages_messageboards(target_account)
+        @full_scope = all_messageboards(target_account)
         @current_account = current_account
         @target_account = target_account
       end
@@ -22,8 +22,8 @@ module ScanChat
 
       private
 
-      def left_messages_messageboards(account)
-        account.left_messages_messageboards
+      def all_messageboards(account)
+        (account.owned_messageboards | account.left_messages_messageboards).uniq
       end
     end
   end

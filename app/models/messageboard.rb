@@ -74,18 +74,29 @@ module ScanChat
       thread.save
     end
 
-    def to_json(options = {})
-      JSON(
-        {
-          type: 'messageboard',
-          attributes: {
-            id:,
-            is_anonymous:,
-            thread:,
-            thread_id:
-          }
-        }, options
+    def to_h
+      {
+        type: 'messageboard',
+        attributes: {
+          id:,
+          is_anonymous:,
+          thread:,
+          thread_id:
+        }
+      }
+    end
+
+    def full_details
+      to_h.merge(
+        relationships: {
+          owner:,
+          messages:
+        }
       )
+    end
+
+    def to_json(options = {})
+      JSON(to_h, options)
     end
   end
 end

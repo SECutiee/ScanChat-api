@@ -7,6 +7,14 @@ describe 'Test messageboards Handling' do
 
   before do
     wipe_database
+
+    @account_data = DATA[:accounts][0]
+    @wrong_account_data = DATA[:accounts][1]
+
+    @account = ScanChat::Account.create(@account_data)
+    @wrong_account = ScanChat::Account.create(@wrong_account_data)
+
+    header 'CONTENT_TYPE', 'application/json'
   end
 
   describe 'Getting messageboards' do

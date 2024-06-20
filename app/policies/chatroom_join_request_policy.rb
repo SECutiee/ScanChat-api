@@ -14,8 +14,7 @@ module ScanChat
     end
 
     def can_invite?
-      # can_write? &&
-      @requestor.can_add_members? && @target.can_join?
+      can_write? && @requestor.can_add_members? && @target.can_join?
     end
 
     def can_remove?

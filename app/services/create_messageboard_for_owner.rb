@@ -18,8 +18,7 @@ module ScanChat
     end
 
     def self.call(auth:, messageboard_data:)
-      raise ForbiddenError unless auth[:scope].can_write?('messageboards')
-
+      # raise ForbiddenError unless auth[:scope].can_write?('messageboards')
       create_messageboard(auth[:account].id, messageboard_data)
     end
 
@@ -29,7 +28,7 @@ module ScanChat
       msgb_data['thread_type'] = 'messageboard'
       new_thread = ScanChat::Thread.create(msgb_data)
       # Api.logger.info('new_thread')
-      %w[name description thread_type].each do |info|
+      %w[name description expiration_date thread_type].each do |info|
         msgb_data.delete(info)
       end
       msgb_data['is_anonymous'] = is_anonymous == 'true'

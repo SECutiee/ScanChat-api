@@ -9,11 +9,11 @@ require 'yaml'
 require_relative 'test_load_all'
 
 def wipe_database
+  ScanChat::Account.map(&:destroy)
   ScanChat::Message.map(&:destroy)
   ScanChat::Thread.map(&:destroy)
   ScanChat::Chatroom.map(&:destroy)
   ScanChat::Messageboard.map(&:destroy)
-  ScanChat::Account.map(&:destroy)
 end
 
 def authenticate(account_data)

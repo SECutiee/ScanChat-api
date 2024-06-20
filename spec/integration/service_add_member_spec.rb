@@ -14,7 +14,7 @@ describe 'Test AddMember service' do
 
     @owner = ScanChat::Account.all[0]
     @member = ScanChat::Account.all[1]
-    @chatroom = ScanChat::CreateProjectForOwner.call(
+    @chatroom = ScanChat::AddMemberToChatroom.call(
       owner_id: @owner.id, chatroom_data:
     )
   end

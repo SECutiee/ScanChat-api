@@ -26,10 +26,10 @@ module Securable
 
   # Encrypt with no checks
   def base_encrypt(plaintext)
-    puts "plaintext: #{plaintext}"
-    puts "key: #{key}"
+    # puts "plaintext: #{plaintext}"
+    # puts "key: #{key}"
     simple_box = RbNaCl::SimpleBox.from_secret_key(key)
-    puts "simple_box: #{simple_box}"
+    # puts "simple_box: #{simple_box}"
     simple_box.encrypt(plaintext)
   end
 

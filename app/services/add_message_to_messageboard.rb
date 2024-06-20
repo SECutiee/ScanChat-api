@@ -24,6 +24,7 @@ module ScanChat
       msg_data = {}
       msg_data['content'] = message_data['content']
       msg_data['sender_id'] = auth[:account].id
+
       messageboard.add_message(msg_data)
     rescue Sequel::MassAssignmentRestriction
       raise IllegalRequestError
