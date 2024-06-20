@@ -19,7 +19,7 @@ module ScanChat
       Api.logger.info("inviter: #{inviter}")
       invited = Account.first(id: auth[:account].id)
       policy = ChatroomJoinRequestPolicy.new(
-        chatroom, auth[:account], invitee, auth[:scope]
+        chatroom, inviter, invited, auth[:scope]
       )
       Api.logger.info("policy: #{policy}")
       raise ForbiddenError unless policy.can_invite?
