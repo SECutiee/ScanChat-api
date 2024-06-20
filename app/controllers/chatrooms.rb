@@ -125,18 +125,6 @@ module ScanChat
           end
         end
 
-        # DELETE api/v1/chatrooms/[thread_id]
-        routing.delete String do |thread_id|
-          thread = Thread.first(id: thread_id)
-          raise 'Chatroom not found' unless thread
-
-          DeleteChatroomByThreadId(thread_id:)
-          { message: 'Chatroom deleted' }.to_json
-        rescue StandardError => e
-          Api.logger.error "UNKNOWN ERROR: #{e.message}"
-          routing.halt 404, { message: e.message }.to_json
-        end
-
         routing.on('edit') do
           # PUT api/v1/chatrooms/[thread_id]/edit
           routing.put do
@@ -153,6 +141,18 @@ module ScanChat
           rescue StandardError
             routing.halt 500, { message: 'API server error' }.to_json
           end
+        end
+        # DELETE api/v1/chatrooms/[thread_id]
+        routing.delete do
+          Api.logger.info('delete_chatroom')
+          thread = Thread.first(id: chatr_id)
+          raise 'Chatroom not found' unless thread
+
+          DeleteChatroomByThreadId.call(thread_id: chatr_id)
+          { message: 'Chatroom deleted' }.to_json
+        rescue StandardError => e
+          Api.logger.error "UNKNOWN ERROR: #{e.message}"
+          routing.halt 404, { message: e.message }.to_json
         end
 
         # GET api/v1/chatrooms/[chatr_id]

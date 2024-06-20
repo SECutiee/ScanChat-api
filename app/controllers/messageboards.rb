@@ -95,6 +95,19 @@ module ScanChat
           end
         end
 
+        # DELETE api/v1/messageboards/[msgb_id]
+        routing.delete do
+          Api.logger.info('delete_messageboard')
+          thread = Thread.first(id: msgb_id)
+          raise 'Messageboard not found' unless thread
+
+          DeleteMessageboardByThreadId.call(thread_id: chatr_id)
+          { message: 'Messageboard deleted' }.to_json
+        rescue StandardError => e
+          Api.logger.error "UNKNOWN ERROR: #{e.message}"
+          routing.halt 404, { message: e.message }.to_json
+        end
+
         # GET api/v1/messageboards/[msgb_id]
         routing.get do
           puts "req_messageboard: #{@req_messageboard}"
