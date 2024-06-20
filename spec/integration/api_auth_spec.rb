@@ -38,8 +38,8 @@ describe 'Test Authentication Routes' do
                           password: 'fakepassword' }
 
       post 'api/v1/auth/authenticate',
-            SignedRequest.new(app.config).sign(bad_credentials).to_json,
-            @req_header
+           SignedRequest.new(app.config).sign(bad_credentials).to_json,
+           @req_header
 
       result = JSON.parse(last_response.body)
 

@@ -6,9 +6,7 @@ module ScanChat
   # Web controller for ScanChat API
   class Api < Roda
     route('messages') do |routing|
-      unless @auth_account
-        routing.halt 403, { message: 'Not authorized' }.to_json
-      end
+      routing.halt 403, { message: 'Not authorized' }.to_json unless @auth_account
 
       @doc_route = "#{@api_root}/messages"
 

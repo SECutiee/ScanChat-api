@@ -27,7 +27,8 @@ module ScanChat
       self.content_secure = SecureDB.encrypt(plaintext)
     end
 
-    def get_thread_members # Wilmacheck: there must be a more clever way to write it
+    # Wilmacheck: there must be a more clever way to write it
+    def get_thread_members
       if thread.chatroom
         thread.chatroom.members
       elsif thread.messageboard

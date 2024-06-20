@@ -8,7 +8,7 @@ module ScanChat
     end
 
     def username
-      @gh_account['login'] + '@github'
+      "#{@gh_account['login']}@github"
     end
 
     def email

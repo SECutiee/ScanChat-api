@@ -15,9 +15,9 @@ module ScanChat
       end
 
       def viewable
-        if @current_account == @target_account
-          @full_scope
-        end
+        return unless @current_account == @target_account
+
+        @full_scope
       end
 
       private

@@ -13,11 +13,11 @@ class ChatroomMessagePolicy
   end
 
   def can_edit?
-    ( account_owns_chatroom? || account_joins_in_chatroom? ) && chatroommessage_belongs_to_account?
+    (account_owns_chatroom? || account_joins_in_chatroom?) && chatroommessage_belongs_to_account?
   end
 
   def can_delete?
-    ( account_owns_chatroom? || account_joins_in_chatroom? ) && chatroommessage_belongs_to_account?
+    (account_owns_chatroom? || account_joins_in_chatroom?) && chatroommessage_belongs_to_account?
   end
 
   def summary

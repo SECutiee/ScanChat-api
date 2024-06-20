@@ -29,5 +29,4 @@ class MessageboardMessagePolicy
   def messageboardmessage_belongs_to_account?
     @message.thread.messageboard && @message.sender == @account
   end
-
 end
