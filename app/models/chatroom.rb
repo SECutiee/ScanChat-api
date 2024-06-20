@@ -39,28 +39,24 @@ module ScanChat
     end
 
     def name
-      # thread.refresh # TODO: omit the refresh since performance is bad
       thread.name
     end
 
     def description
-      # thread.refresh
       thread.description
     end
 
     def expiration_date
-      # thread.refresh
       thread.expiration_date
     end
 
     def owner
-      # thread.refresh
       thread.owner
     end
 
     def name=(value)
       thread.name = value
-      thread.save # potential performance implications
+      thread.save
     end
 
     def description=(value)
