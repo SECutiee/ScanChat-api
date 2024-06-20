@@ -12,7 +12,7 @@ class AccountPolicy
     self_request?
   end
 
-  def can_invite? # TODO: is this correct? (@ju)
+  def can_invite?
     self_request?
   end
 
