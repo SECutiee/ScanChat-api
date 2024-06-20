@@ -44,6 +44,7 @@ module ScanChat
           type: 'message',
           attributes: {
             id:,
+            created_at: created_at.iso8601,
             content:,
             sender_username: sender.username,
             sender_nickname: sender.nickname,
