@@ -5,3 +5,5 @@ _*
 app/db/store/*.db
 config/secrets.yml
 log/*
+coverage/*
+!coverage/.resultset.json
